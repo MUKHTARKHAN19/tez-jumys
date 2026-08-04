@@ -149,6 +149,12 @@ function MyAdsList() {
               </View>
             )}
 
+            <Text style={styles.statsText}>
+              {t('myAds.statsLine')
+                .replace('{views}', String(item.views_count))
+                .replace('{calls}', String(item.calls_count))}
+            </Text>
+
             <Pressable
               style={styles.applicationsRow}
               onPress={() =>
@@ -254,6 +260,10 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   hiddenBadgeText: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+  },
+  statsText: {
     color: colors.textMuted,
     fontSize: fontSize.xs,
   },

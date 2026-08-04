@@ -61,6 +61,8 @@ export interface Vacancy {
   is_active: boolean;
   moderation_status: ModerationStatus;
   moderation_note: string | null;
+  views_count: number;
+  calls_count: number;
   created_at: string;
 }
 

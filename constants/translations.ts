@@ -81,6 +81,7 @@ const kk = {
   'myAds.statusPending': 'Тексерілуде (1-5 минут)',
   'myAds.statusRejected': 'Қабылданбады',
   'myAds.applicationsCount': '{count} өтініш',
+  'myAds.statsLine': '👁 {views} қаралды · 📞 {calls} хабарласты',
   'myAds.deleteConfirmTitle': 'Вакансияны өшіру',
   'myAds.deleteConfirmMessage': 'Бұл әрекетті қайтару мүмкін емес. Шынымен өшіргіңіз келе ме?',
   'myAds.deleteConfirmButton': 'Өшіру',
@@ -136,6 +137,7 @@ const kk = {
   'vacancyDetail.shareButton': 'Бөлісу',
   'vacancyDetail.applyButton': 'Өтініш беру',
   'vacancyDetail.appliedButton': 'Өтініш берілді ✓',
+  'vacancyDetail.paymentWarning': 'Жұмысқа орналасу үшін ешқашан алдын ала ақша төлемеңіз',
 
   'auth.emailLabel': 'Email',
   'auth.passwordLabel': 'Құпия сөз',
@@ -386,6 +388,7 @@ const ru: Record<keyof typeof kk, string> = {
   'myAds.statusPending': 'На проверке (1-5 минут)',
   'myAds.statusRejected': 'Отклонено',
   'myAds.applicationsCount': '{count} заявок',
+  'myAds.statsLine': '👁 {views} просмотров · 📞 {calls} обращений',
   'myAds.deleteConfirmTitle': 'Удалить вакансию',
   'myAds.deleteConfirmMessage': 'Это действие нельзя отменить. Вы точно хотите удалить?',
   'myAds.deleteConfirmButton': 'Удалить',
@@ -441,6 +444,7 @@ const ru: Record<keyof typeof kk, string> = {
   'vacancyDetail.shareButton': 'Поделиться',
   'vacancyDetail.applyButton': 'Откликнуться',
   'vacancyDetail.appliedButton': 'Отклик отправлен ✓',
+  'vacancyDetail.paymentWarning': 'Никогда не платите деньги вперёд за трудоустройство',
 
   'auth.emailLabel': 'Email',
   'auth.passwordLabel': 'Пароль',

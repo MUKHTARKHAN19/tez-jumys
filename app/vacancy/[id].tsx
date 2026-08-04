@@ -49,6 +49,7 @@ export default function VacancyDetailScreen() {
         setVacancy((data as VacancyWithRelations | null) ?? null);
         setLoading(false);
       });
+    supabase.rpc('increment_vacancy_view', { vacancy_id: id });
   }, [id]);
 
   useEffect(() => {
@@ -100,6 +101,11 @@ export default function VacancyDetailScreen() {
         });
       }
     }
+  };
+
+  const handleContactPress = (url: string) => {
+    if (vacancy) supabase.rpc('increment_vacancy_call', { vacancy_id: vacancy.id });
+    Linking.openURL(url);
   };
 
   if (loading) {
@@ -165,6 +171,11 @@ export default function VacancyDetailScreen() {
         </View>
       </Card>
 
+      <View style={styles.warningBanner}>
+        <Ionicons name="warning-outline" size={18} color={colors.warning} />
+        <Text style={styles.warningText}>{t('vacancyDetail.paymentWarning')}</Text>
+      </View>
+
       <View style={styles.field}>
         <Text style={styles.label}>{t('vacancyDetail.descriptionLabel')}</Text>
         <Card>
@@ -200,7 +211,7 @@ export default function VacancyDetailScreen() {
             : t('vacancyDetail.contactButton')
         }
         icon="call-outline"
-        onPress={() => vacancy.contact_phone && Linking.openURL(`tel:${vacancy.contact_phone}`)}
+        onPress={() => vacancy.contact_phone && handleContactPress(`tel:${vacancy.contact_phone}`)}
         disabled={!vacancy.contact_phone}
       />
 
@@ -210,7 +221,7 @@ export default function VacancyDetailScreen() {
           variant="outline"
           icon="logo-whatsapp"
           onPress={() =>
-            Linking.openURL(`https://wa.me/${toWhatsAppDigits(vacancy.contact_phone as string)}`)
+            handleContactPress(`https://wa.me/${toWhatsAppDigits(vacancy.contact_phone as string)}`)
           }
         />
       )}
@@ -324,5 +335,22 @@ const styles = StyleSheet.create({
   },
   footerActions: {
     gap: spacing.sm,
+  },
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: `${colors.warning}1F`,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    borderRadius: radii.md,
+    padding: spacing.sm,
+  },
+  warningText: {
+    flex: 1,
+    color: colors.warning,
+    fontSize: fontSize.xs,
+    fontWeight: '600',
+    lineHeight: 16,
   },
 });
