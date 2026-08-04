@@ -2,56 +2,78 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Card } from '@/components/Card';
+import { getScheduleLabel } from '@/constants/schedule';
 import { colors, fontSize, radii, spacing } from '@/constants/theme';
-import type { VacancySchedule, VacancyWithRelations } from '@/types/database';
-
-const scheduleLabels: Record<VacancySchedule, string> = {
-  full_time: 'Толық жұмыс күні',
-  part_time: 'Жарты ставка',
-  shift: 'Кезекпен',
-  flexible: 'Икемді кесте',
-};
+import { formatRelativeTime } from '@/lib/formatRelativeTime';
+import { formatSalary } from '@/lib/formatSalary';
+import { useLanguage } from '@/lib/i18n';
+import type { VacancyWithRelations } from '@/types/database';
 
 type VacancyCardProps = {
   vacancy: VacancyWithRelations;
   onPress?: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 };
 
-export function VacancyCard({ vacancy, onPress }: VacancyCardProps) {
-  const salaryLabel = formatSalary(vacancy.salary_from, vacancy.salary_to);
+export function VacancyCard({ vacancy, onPress, isFavorite, onToggleFavorite }: VacancyCardProps) {
+  const { language, t, localize } = useLanguage();
+  const salaryLabel = formatSalary(
+    vacancy.salary_from,
+    vacancy.salary_to,
+    language,
+    t,
+    vacancy.salary_period
+  );
 
   return (
     <Pressable onPress={onPress}>
       <Card style={styles.card}>
         <View style={styles.headerRow}>
           <Text style={styles.position} numberOfLines={1}>
-            {vacancy.position?.name_kk ?? 'Лауазым'}
+            {vacancy.position ? localize(vacancy.position) : t('vacancyCard.positionFallback')}{' '}
+            {t('vacancyCard.neededSuffix')}
           </Text>
           {vacancy.schedule && (
             <View style={styles.scheduleTag}>
-              <Text style={styles.scheduleText}>{scheduleLabels[vacancy.schedule]}</Text>
+              <Text style={styles.scheduleText}>{getScheduleLabel(vacancy.schedule, language)}</Text>
             </View>
           )}
+          {onToggleFavorite && (
+            <Pressable hitSlop={8} onPress={onToggleFavorite}>
+              <Ionicons
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={20}
+                color={isFavorite ? colors.danger : colors.textMuted}
+              />
+            </Pressable>
+          )}
         </View>
+
+        {vacancy.employer?.business_name && (
+          <Text style={styles.businessName} numberOfLines={1}>
+            {vacancy.employer.business_name}
+          </Text>
+        )}
 
         <Text style={styles.salary}>{salaryLabel}</Text>
 
         <View style={styles.footerRow}>
-          <Ionicons name="location-outline" size={16} color={colors.textSecondary} />
+          <Ionicons name="location-outline" size={16} color={colors.danger} />
           <Text style={styles.location} numberOfLines={1}>
-            {vacancy.settlement?.name_kk ?? 'Орналасқан жері'}
+            {vacancy.settlement
+              ? localize(vacancy.settlement)
+              : vacancy.district
+                ? localize(vacancy.district)
+                : vacancy.region
+                  ? localize(vacancy.region)
+                  : t('vacancyCard.locationFallback')}
           </Text>
+          <Text style={styles.postedAt}>· {formatRelativeTime(vacancy.created_at, language)}</Text>
         </View>
       </Card>
     </Pressable>
   );
-}
-
-function formatSalary(from: number | null, to: number | null) {
-  if (!from && !to) return 'Жалақы келісім бойынша';
-  if (from && to) return `${from.toLocaleString('ru-RU')} – ${to.toLocaleString('ru-RU')} ₸`;
-  const value = from ?? to ?? 0;
-  return `${value.toLocaleString('ru-RU')} ₸-ден`;
 }
 
 const styles = StyleSheet.create({
@@ -81,8 +103,12 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     fontWeight: '600',
   },
+  businessName: {
+    color: colors.textSecondary,
+    fontSize: fontSize.sm,
+  },
   salary: {
-    color: colors.accent,
+    color: colors.success,
     fontSize: fontSize.md,
     fontWeight: '700',
   },
@@ -92,8 +118,12 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   location: {
+    flex: 1,
     color: colors.textSecondary,
     fontSize: fontSize.sm,
-    flexShrink: 1,
+  },
+  postedAt: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
   },
 });

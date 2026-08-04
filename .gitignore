@@ -34,6 +34,9 @@ yarn-error.*
 .env
 .env*.local
 
+# құрамында құпия кілт бар SQL (service_role key) — git-ке жіберілмейді
+supabase/add_moderation.sql
+
 # typescript
 *.tsbuildinfo
 

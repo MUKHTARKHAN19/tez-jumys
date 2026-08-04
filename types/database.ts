@@ -1,4 +1,4 @@
-// Supabase-тегі кестелерге сай типтер. Деректер әзірге қосылмаған — тек құрылым.
+// Supabase-тегі кестелерге сай типтер.
 
 export interface Region {
   id: string;
@@ -32,42 +32,83 @@ export interface Employer {
   user_id: string;
   business_name: string;
   contact_phone: string;
+  region_id: string | null;
+  district_id: string | null;
   settlement_id: string | null;
+  logo_url: string | null;
+  is_blocked: boolean;
   created_at: string;
 }
 
 export type VacancySchedule = 'full_time' | 'part_time' | 'shift' | 'flexible';
+export type SalaryPeriod = 'hour' | 'day' | 'week' | 'month';
+export type ModerationStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Vacancy {
   id: string;
   employer_id: string;
   position_id: string;
-  settlement_id: string;
+  region_id: string;
+  district_id: string | null;
+  settlement_id: string | null;
   salary_from: number | null;
   salary_to: number | null;
+  salary_period: SalaryPeriod | null;
   schedule: VacancySchedule | null;
   description: string | null;
   contact_phone: string | null;
+  photo_url: string | null;
   is_active: boolean;
+  moderation_status: ModerationStatus;
+  moderation_note: string | null;
   created_at: string;
 }
 
 // Экрандарда карточка/тізім деректерін біріктіру үшін қолданылатын кеңейтілген түрлер.
 export interface VacancyWithRelations extends Vacancy {
   position: Position | null;
+  region: Region | null;
+  district: District | null;
   settlement: Settlement | null;
   employer: Employer | null;
 }
 
-export interface Database {
-  public: {
-    Tables: {
-      regions: { Row: Region; Insert: Region; Update: Partial<Region> };
-      districts: { Row: District; Insert: District; Update: Partial<District> };
-      settlements: { Row: Settlement; Insert: Settlement; Update: Partial<Settlement> };
-      positions: { Row: Position; Insert: Position; Update: Partial<Position> };
-      employers: { Row: Employer; Insert: Employer; Update: Partial<Employer> };
-      vacancies: { Row: Vacancy; Insert: Vacancy; Update: Partial<Vacancy> };
-    };
-  };
+export interface Seeker {
+  id: string;
+  user_id: string;
+  full_name: string;
+  contact_phone: string;
+  position_id: string | null;
+  region_id: string | null;
+  district_id: string | null;
+  settlement_id: string | null;
+  bio: string | null;
+  is_hidden: boolean;
+  created_at: string;
+}
+
+export interface SeekerWithRelations extends Seeker {
+  position: Position | null;
+  region: Region | null;
+  district: District | null;
+  settlement: Settlement | null;
+}
+
+export interface BannedWord {
+  id: string;
+  word: string;
+  created_at: string;
+}
+
+export type ReportTargetType = 'vacancy' | 'seeker';
+export type ReportStatus = 'pending' | 'reviewed';
+
+export interface Report {
+  id: string;
+  target_type: ReportTargetType;
+  target_id: string;
+  reporter_id: string | null;
+  reason: string | null;
+  status: ReportStatus;
+  created_at: string;
 }

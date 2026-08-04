@@ -1,60 +1,101 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 
 import { Card } from '@/components/Card';
 import { LogoMark } from '@/components/LogoMark';
+import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { colors, fontSize, radii, spacing } from '@/constants/theme';
-
-type AppLanguage = 'kk' | 'ru';
-
-const menuItems: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress?: () => void }[] = [
-  { icon: 'business-outline', label: 'Бизнес профилі' },
-  { icon: 'notifications-outline', label: 'Хабарландырулар' },
-  { icon: 'help-circle-outline', label: 'Көмек орталығы' },
-  { icon: 'log-out-outline', label: 'Шығу' },
-];
+import { useAuth } from '@/lib/auth';
+import { useLanguage, type AppLanguage } from '@/lib/i18n';
 
 export default function ProfileScreen() {
-  const [language, setLanguage] = useState<AppLanguage>('kk');
+  const { language, setLanguage, t } = useLanguage();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const menuItems: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
+    { icon: 'heart-outline', label: t('profile.favorites'), onPress: () => router.push('/favorites') },
+    ...(user
+      ? [
+          {
+            icon: 'business-outline' as const,
+            label: t('profile.businessProfile'),
+            onPress: () => router.push('/business-profile'),
+          },
+          {
+            icon: 'person-circle-outline' as const,
+            label: t('profile.seekerProfile'),
+            onPress: () => router.push('/seeker-profile'),
+          },
+          {
+            icon: 'people-outline' as const,
+            label: t('profile.candidates'),
+            onPress: () => router.push('/candidates'),
+          },
+          {
+            icon: 'hand-left-outline' as const,
+            label: t('profile.blockedUsers'),
+            onPress: () => router.push('/blocked-users'),
+          },
+        ]
+      : []),
+    ...(isAdmin
+      ? [
+          {
+            icon: 'shield-checkmark-outline' as const,
+            label: t('profile.adminPanel'),
+            onPress: () => router.push('/admin' as Href),
+          },
+        ]
+      : []),
+    {
+      icon: 'help-circle-outline',
+      label: t('profile.helpCenter'),
+      onPress: () => Linking.openURL('mailto:tez.jumys@mail.ru'),
+    },
+    ...(user
+      ? [{ icon: 'log-out-outline' as const, label: t('profile.signOut'), onPress: signOut }]
+      : []),
+  ];
 
   return (
     <ScreenContainer>
       <View style={styles.header}>
         <LogoMark size={56} />
-        <View>
-          <Text style={styles.name}>Қонақ пайдаланушы</Text>
-          <Text style={styles.subtitle}>Профиль әлі толтырылмаған</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.name} numberOfLines={1}>
+            {user?.email ?? t('profile.guestName')}
+          </Text>
+          <Text style={styles.subtitle}>
+            {user ? t('profile.loggedIn') : t('profile.notLoggedIn')}
+          </Text>
         </View>
       </View>
 
+      {!user && (
+        <Card style={styles.noticeCard}>
+          <Ionicons name="log-in-outline" size={20} color={colors.accent} />
+          <Text style={styles.noticeText}>{t('profile.loginNotice')}</Text>
+          <PillButton label={t('profile.loginButton')} onPress={() => router.push('/auth')} />
+        </Card>
+      )}
+
       <Card style={styles.languageCard}>
-        <Text style={styles.label}>Тіл</Text>
+        <Text style={styles.label}>{t('profile.languageLabel')}</Text>
         <View style={styles.languageSwitch}>
-          <Pressable
-            style={[styles.languageOption, language === 'kk' && styles.languageOptionActive]}
-            onPress={() => setLanguage('kk')}>
-            <Text
-              style={[
-                styles.languageText,
-                language === 'kk' && styles.languageTextActive,
-              ]}>
-              Қазақша
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.languageOption, language === 'ru' && styles.languageOptionActive]}
-            onPress={() => setLanguage('ru')}>
-            <Text
-              style={[
-                styles.languageText,
-                language === 'ru' && styles.languageTextActive,
-              ]}>
-              Русский
-            </Text>
-          </Pressable>
+          <LanguageOption
+            value="kk"
+            label="Қазақша"
+            active={language === 'kk'}
+            onPress={setLanguage}
+          />
+          <LanguageOption
+            value="ru"
+            label="Русский"
+            active={language === 'ru'}
+            onPress={setLanguage}
+          />
         </View>
       </Card>
 
@@ -63,18 +104,50 @@ export default function ProfileScreen() {
           <Pressable
             key={item.label}
             style={[styles.menuRow, index !== menuItems.length - 1 && styles.menuRowBorder]}
-            onPress={
-              item.label === 'Бизнес профилі'
-                ? () => router.push('/business-profile')
-                : item.onPress
-            }>
+            onPress={item.onPress}>
             <Ionicons name={item.icon} size={20} color={colors.accent} />
             <Text style={styles.menuLabel}>{item.label}</Text>
             <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
           </Pressable>
         ))}
       </Card>
+
+      <Pressable
+        style={styles.supportRow}
+        onPress={() => Linking.openURL('mailto:tez.jumys@mail.ru')}>
+        <Ionicons name="mail-outline" size={14} color={colors.textMuted} />
+        <Text style={styles.supportText}>
+          {t('profile.supportEmailPrefix')}tez.jumys@mail.ru
+        </Text>
+      </Pressable>
+
+      {user && (
+        <Pressable style={styles.dangerRow} onPress={() => router.push('/delete-account')}>
+          <Ionicons name="trash-outline" size={18} color={colors.danger} />
+          <Text style={styles.dangerLabel}>{t('profile.deleteAccount')}</Text>
+        </Pressable>
+      )}
     </ScreenContainer>
+  );
+}
+
+function LanguageOption({
+  value,
+  label,
+  active,
+  onPress,
+}: {
+  value: AppLanguage;
+  label: string;
+  active: boolean;
+  onPress: (value: AppLanguage) => void;
+}) {
+  return (
+    <Pressable
+      style={[styles.languageOption, active && styles.languageOptionActive]}
+      onPress={() => onPress(value)}>
+      <Text style={[styles.languageText, active && styles.languageTextActive]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -92,6 +165,15 @@ const styles = StyleSheet.create({
   subtitle: {
     color: colors.textSecondary,
     fontSize: fontSize.sm,
+  },
+  noticeCard: {
+    gap: spacing.sm,
+    alignItems: 'flex-start',
+  },
+  noticeText: {
+    color: colors.textSecondary,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
   },
   languageCard: {
     gap: spacing.sm,
@@ -140,5 +222,28 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: fontSize.md,
     fontWeight: '500',
+  },
+  supportRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
+  },
+  supportText: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+  },
+  dangerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.md,
+  },
+  dangerLabel: {
+    color: colors.danger,
+    fontSize: fontSize.sm,
+    fontWeight: '600',
   },
 });

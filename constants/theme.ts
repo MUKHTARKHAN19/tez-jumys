@@ -15,6 +15,7 @@ export const colors = {
   textMuted: '#6C6C7C',
   danger: '#E86F6F',
   success: '#6FE8A8',
+  warning: '#F2C14E',
   white: '#FFFFFF',
 } as const;
 

@@ -2,16 +2,19 @@ import { Link, Stack } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, fontSize, spacing } from '@/constants/theme';
+import { useLanguage } from '@/lib/i18n';
 
 export default function NotFoundScreen() {
+  const { t } = useLanguage();
+
   return (
     <>
-      <Stack.Screen options={{ title: 'Табылмады' }} />
+      <Stack.Screen options={{ title: t('titles.notFound') }} />
       <View style={styles.container}>
-        <Text style={styles.title}>Мұндай экран табылмады.</Text>
+        <Text style={styles.title}>{t('notFound.message')}</Text>
 
         <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Басты бетке оралу</Text>
+          <Text style={styles.linkText}>{t('notFound.backLink')}</Text>
         </Link>
       </View>
     </>

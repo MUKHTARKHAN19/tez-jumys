@@ -7,22 +7,26 @@ import { Card } from '@/components/Card';
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { colors, fontSize, spacing } from '@/constants/theme';
+import { useBrowseFilters } from '@/lib/browseFilters';
+import { useLanguage } from '@/lib/i18n';
 
 const SALARY_MIN = 0;
 const SALARY_MAX = 1_000_000;
 const SALARY_STEP = 10_000;
 
 export default function FilterScreen() {
-  const [salaryFrom, setSalaryFrom] = useState(SALARY_MIN);
-  const [salaryTo, setSalaryTo] = useState(SALARY_MAX);
+  const { t } = useLanguage();
+  const { salaryFilter, setSalaryFilter } = useBrowseFilters();
+  const [salaryFrom, setSalaryFrom] = useState(salaryFilter.salaryFrom ?? SALARY_MIN);
+  const [salaryTo, setSalaryTo] = useState(salaryFilter.salaryTo ?? SALARY_MAX);
 
   return (
     <ScreenContainer>
       <View style={styles.field}>
-        <Text style={styles.label}>Жалақы аралығы</Text>
+        <Text style={styles.label}>{t('filter.salaryRangeLabel')}</Text>
         <Card style={styles.sliderCard}>
           <View style={styles.sliderRow}>
-            <Text style={styles.sliderCaption}>Бастап</Text>
+            <Text style={styles.sliderCaption}>{t('filter.from')}</Text>
             <Text style={styles.sliderValue}>{salaryFrom.toLocaleString('ru-RU')} ₸</Text>
           </View>
           <Slider
@@ -37,7 +41,7 @@ export default function FilterScreen() {
           />
 
           <View style={styles.sliderRow}>
-            <Text style={styles.sliderCaption}>Дейін</Text>
+            <Text style={styles.sliderCaption}>{t('filter.to')}</Text>
             <Text style={styles.sliderValue}>{salaryTo.toLocaleString('ru-RU')} ₸</Text>
           </View>
           <Slider
@@ -56,16 +60,26 @@ export default function FilterScreen() {
       <View style={styles.actions}>
         <View style={styles.actionButton}>
           <PillButton
-            label="Тазарту"
+            label={t('filter.clear')}
             variant="outline"
             onPress={() => {
               setSalaryFrom(SALARY_MIN);
               setSalaryTo(SALARY_MAX);
+              setSalaryFilter({ salaryFrom: null, salaryTo: null });
             }}
           />
         </View>
         <View style={styles.actionButton}>
-          <PillButton label="Қолдану" onPress={() => router.back()} />
+          <PillButton
+            label={t('filter.apply')}
+            onPress={() => {
+              setSalaryFilter({
+                salaryFrom: salaryFrom > SALARY_MIN ? salaryFrom : null,
+                salaryTo: salaryTo < SALARY_MAX ? salaryTo : null,
+              });
+              router.back();
+            }}
+          />
         </View>
       </View>
     </ScreenContainer>
