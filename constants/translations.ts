@@ -25,6 +25,8 @@ const kk = {
   'titles.forgotPassword': 'Парольді қалпына келтіру',
   'titles.resetPassword': 'Жаңа пароль',
   'titles.blockedUsers': 'Блокталғандар',
+  'titles.savedSearches': 'Сақталған іздеулер',
+  'titles.vacancyApplications': 'Өтініштер',
 
   'notFound.message': 'Мұндай экран табылмады.',
   'notFound.backLink': 'Басты бетке оралу',
@@ -36,6 +38,8 @@ const kk = {
   'vacancies.searchPlaceholder': 'Лауазым немесе компания бойынша іздеу',
   'vacancies.sortNewest': 'Жаңасынан',
   'vacancies.sortSalary': 'Жалақы бойынша',
+  'vacancies.saveSearch': '🔔 Осы іздеуді сақтау',
+  'vacancies.searchSaved': 'Сақталды ✓',
 
   'vacancyCard.positionFallback': 'Лауазым',
   'vacancyCard.locationFallback': 'Орналасқан жері',
@@ -76,6 +80,7 @@ const kk = {
   'myAds.hiddenBadge': 'Жасырылған — тек сізге көрінеді',
   'myAds.statusPending': 'Тексерілуде (1-5 минут)',
   'myAds.statusRejected': 'Қабылданбады',
+  'myAds.applicationsCount': '{count} өтініш',
   'myAds.deleteConfirmTitle': 'Вакансияны өшіру',
   'myAds.deleteConfirmMessage': 'Бұл әрекетті қайтару мүмкін емес. Шынымен өшіргіңіз келе ме?',
   'myAds.deleteConfirmButton': 'Өшіру',
@@ -129,6 +134,8 @@ const kk = {
   'vacancyDetail.contactButtonPrefix': 'Хабарласу: ',
   'vacancyDetail.whatsappButton': 'WhatsApp-пен жазу',
   'vacancyDetail.shareButton': 'Бөлісу',
+  'vacancyDetail.applyButton': 'Өтініш беру',
+  'vacancyDetail.appliedButton': 'Өтініш берілді ✓',
 
   'auth.emailLabel': 'Email',
   'auth.passwordLabel': 'Құпия сөз',
@@ -240,7 +247,18 @@ const kk = {
   'admin.reportsEmptyTitle': 'Шағым жоқ',
 
   'profile.blockedUsers': 'Блокталғандар',
+  'profile.savedSearches': 'Сақталған іздеулер',
   'profile.deleteAccount': 'Аккаунтты өшіру',
+
+  'vacancyApplications.newBadge': 'Жаңа',
+  'vacancyApplications.emptyTitle': 'Өтініш жоқ',
+  'vacancyApplications.emptyDescription': 'Үміткерлер өтініш бергенде осы жерде көрінеді.',
+
+  'savedSearches.authMessage': 'Сақталған іздеулерді көру үшін алдымен жүйеге кіріңіз.',
+  'savedSearches.emptyTitle': 'Сақталған іздеу жоқ',
+  'savedSearches.emptyDescription':
+    'Вакансиялар бетінде сүзгі қойып, «Осы іздеуді сақтау» батырмасын басыңыз.',
+  'savedSearches.anyPosition': 'Кез келген лауазым',
 
   'deleteAccount.authMessage': 'Аккаунтты өшіру үшін алдымен жүйеге кіріңіз.',
   'deleteAccount.title': 'Аккаунтты өшіру',
@@ -312,6 +330,8 @@ const ru: Record<keyof typeof kk, string> = {
   'titles.forgotPassword': 'Восстановление пароля',
   'titles.resetPassword': 'Новый пароль',
   'titles.blockedUsers': 'Заблокированные',
+  'titles.savedSearches': 'Сохранённые поиски',
+  'titles.vacancyApplications': 'Заявки',
 
   'notFound.message': 'Такого экрана не существует.',
   'notFound.backLink': 'Вернуться на главную',
@@ -323,6 +343,8 @@ const ru: Record<keyof typeof kk, string> = {
   'vacancies.searchPlaceholder': 'Поиск по должности или компании',
   'vacancies.sortNewest': 'Сначала новые',
   'vacancies.sortSalary': 'По зарплате',
+  'vacancies.saveSearch': '🔔 Сохранить этот поиск',
+  'vacancies.searchSaved': 'Сохранено ✓',
 
   'vacancyCard.positionFallback': 'Должность',
   'vacancyCard.locationFallback': 'Местоположение',
@@ -363,6 +385,7 @@ const ru: Record<keyof typeof kk, string> = {
   'myAds.hiddenBadge': 'Скрыто — видно только вам',
   'myAds.statusPending': 'На проверке (1-5 минут)',
   'myAds.statusRejected': 'Отклонено',
+  'myAds.applicationsCount': '{count} заявок',
   'myAds.deleteConfirmTitle': 'Удалить вакансию',
   'myAds.deleteConfirmMessage': 'Это действие нельзя отменить. Вы точно хотите удалить?',
   'myAds.deleteConfirmButton': 'Удалить',
@@ -416,6 +439,8 @@ const ru: Record<keyof typeof kk, string> = {
   'vacancyDetail.contactButtonPrefix': 'Связаться: ',
   'vacancyDetail.whatsappButton': 'Написать в WhatsApp',
   'vacancyDetail.shareButton': 'Поделиться',
+  'vacancyDetail.applyButton': 'Откликнуться',
+  'vacancyDetail.appliedButton': 'Отклик отправлен ✓',
 
   'auth.emailLabel': 'Email',
   'auth.passwordLabel': 'Пароль',
@@ -527,7 +552,18 @@ const ru: Record<keyof typeof kk, string> = {
   'admin.reportsEmptyTitle': 'Жалоб нет',
 
   'profile.blockedUsers': 'Заблокированные',
+  'profile.savedSearches': 'Сохранённые поиски',
   'profile.deleteAccount': 'Удалить аккаунт',
+
+  'vacancyApplications.newBadge': 'Новая',
+  'vacancyApplications.emptyTitle': 'Заявок нет',
+  'vacancyApplications.emptyDescription': 'Кандидаты появятся здесь, когда откликнутся.',
+
+  'savedSearches.authMessage': 'Чтобы посмотреть сохранённые поиски, сначала войдите в систему.',
+  'savedSearches.emptyTitle': 'Сохранённых поисков нет',
+  'savedSearches.emptyDescription':
+    'На странице вакансий задайте фильтр и нажмите «Сохранить этот поиск».',
+  'savedSearches.anyPosition': 'Любая должность',
 
   'deleteAccount.authMessage': 'Чтобы удалить аккаунт, сначала войдите в систему.',
   'deleteAccount.title': 'Удаление аккаунта',

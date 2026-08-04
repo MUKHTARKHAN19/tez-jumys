@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, type Href } from 'expo-router';
 
 import { AuthGate } from '@/components/AuthGate';
 import { EmptyState } from '@/components/EmptyState';
@@ -27,6 +27,7 @@ function MyAdsList() {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [vacancies, setVacancies] = useState<VacancyWithRelations[]>([]);
+  const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
@@ -43,11 +44,27 @@ function MyAdsList() {
         )
         .eq('employer.user_id', user.id)
         .order('created_at', { ascending: false })
-        .then(({ data }) => {
-          if (!cancelled) {
-            setVacancies((data as VacancyWithRelations[] | null) ?? []);
-            setLoading(false);
+        .then(async ({ data }) => {
+          if (cancelled) return;
+          const list = (data as VacancyWithRelations[] | null) ?? [];
+          setVacancies(list);
+          setLoading(false);
+
+          const vacancyIds = list.map((v) => v.id);
+          if (vacancyIds.length === 0) {
+            setApplicationCounts({});
+            return;
           }
+          const { data: applications } = await supabase
+            .from('applications')
+            .select('vacancy_id')
+            .in('vacancy_id', vacancyIds);
+          if (cancelled) return;
+          const counts: Record<string, number> = {};
+          for (const row of applications ?? []) {
+            counts[row.vacancy_id] = (counts[row.vacancy_id] ?? 0) + 1;
+          }
+          setApplicationCounts(counts);
         });
 
       return () => {
@@ -131,6 +148,21 @@ function MyAdsList() {
                 <Text style={styles.hiddenBadgeText}>{t('myAds.hiddenBadge')}</Text>
               </View>
             )}
+
+            <Pressable
+              style={styles.applicationsRow}
+              onPress={() =>
+                router.push({
+                  pathname: '/vacancy-applications/[id]',
+                  params: { id: item.id },
+                } as unknown as Href)
+              }>
+              <Ionicons name="people-outline" size={14} color={colors.accent} />
+              <Text style={styles.applicationsText}>
+                {t('myAds.applicationsCount').replace('{count}', String(applicationCounts[item.id] ?? 0))}
+              </Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+            </Pressable>
 
             {confirmDeleteId === item.id ? (
               <View style={styles.confirmRow}>
@@ -224,6 +256,17 @@ const styles = StyleSheet.create({
   hiddenBadgeText: {
     color: colors.textMuted,
     fontSize: fontSize.xs,
+  },
+  applicationsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    alignSelf: 'flex-start',
+  },
+  applicationsText: {
+    color: colors.accent,
+    fontSize: fontSize.xs,
+    fontWeight: '600',
   },
   actionsRow: {
     flexDirection: 'row',

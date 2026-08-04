@@ -11,6 +11,7 @@ import { ReportButton } from '@/components/ReportButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { getScheduleLabel } from '@/constants/schedule';
 import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { useAuth } from '@/lib/auth';
 import { useFavorites } from '@/lib/favorites';
 import { formatRelativeTime } from '@/lib/formatRelativeTime';
 import { formatSalary } from '@/lib/formatSalary';
@@ -26,10 +27,14 @@ function toWhatsAppDigits(phone: string) {
 
 export default function VacancyDetailScreen() {
   const { language, t, localize } = useLanguage();
+  const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [vacancy, setVacancy] = useState<VacancyWithRelations | null>(null);
+  const [mySeeker, setMySeeker] = useState<{ id: string; full_name: string } | null>(null);
+  const [applied, setApplied] = useState(false);
+  const [applying, setApplying] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -45,6 +50,57 @@ export default function VacancyDetailScreen() {
         setLoading(false);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (!user || !id) return;
+    supabase
+      .from('seekers')
+      .select('id, full_name')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data: seeker }) => {
+        if (!seeker) return;
+        setMySeeker(seeker);
+        supabase
+          .from('applications')
+          .select('id')
+          .eq('vacancy_id', id)
+          .eq('seeker_id', seeker.id)
+          .maybeSingle()
+          .then(({ data: existing }) => setApplied(!!existing));
+      });
+  }, [user, id]);
+
+  const handleApply = async () => {
+    if (!user) {
+      router.push('/auth');
+      return;
+    }
+    if (!mySeeker) {
+      router.push('/seeker-profile');
+      return;
+    }
+    if (!vacancy) return;
+
+    setApplying(true);
+    const { error } = await supabase
+      .from('applications')
+      .insert({ vacancy_id: vacancy.id, seeker_id: mySeeker.id });
+    setApplying(false);
+
+    if (!error) {
+      setApplied(true);
+      if (vacancy.employer?.user_id) {
+        supabase.functions.invoke('send-push', {
+          body: {
+            user_id: vacancy.employer.user_id,
+            title: 'Жаңа өтініш! / Новая заявка!',
+            body: `${mySeeker.full_name} сіздің вакансияңызға өтініш берді. / ${mySeeker.full_name} откликнулся(-ась) на вашу вакансию.`,
+          },
+        });
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -127,6 +183,15 @@ export default function VacancyDetailScreen() {
           </Text>
         </Card>
       </View>
+
+      {vacancy.employer?.user_id !== user?.id && (
+        <PillButton
+          label={applied ? t('vacancyDetail.appliedButton') : t('vacancyDetail.applyButton')}
+          icon={applied ? 'checkmark-circle' : 'paper-plane-outline'}
+          onPress={handleApply}
+          disabled={applied || applying}
+        />
+      )}
 
       <PillButton
         label={

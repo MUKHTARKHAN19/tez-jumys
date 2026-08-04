@@ -156,7 +156,7 @@ Deno.serve(async () => {
   const { data: pending, error } = await supabase
     .from('vacancies')
     .select(
-      'id, description, position:positions(name_kk, name_ru), employer:employers(business_name, user_id)'
+      'id, description, position_id, region_id, district_id, settlement_id, position:positions(name_kk, name_ru), employer:employers(business_name, user_id)'
     )
     .eq('moderation_status', 'pending')
     .lte('created_at', oneMinuteAgo)
@@ -165,6 +165,10 @@ Deno.serve(async () => {
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
+
+  // Сақталған іздеулерді (job alert) бір рет алып қоямыз — әр мақұлданған
+  // вакансия сайын соларға сәйкес келетінін тексереміз.
+  const { data: savedSearches } = await supabase.from('saved_searches').select('*');
 
   const results: { id: string; flagged: boolean; censored: boolean }[] = [];
 
@@ -241,6 +245,26 @@ Deno.serve(async () => {
           employerUserId,
           'Вакансия мақұлданды ✅ / Вакансия одобрена ✅',
           'Сіздің вакансияңыз жарияланды. / Ваша вакансия опубликована.'
+        );
+      }
+    }
+
+    // Мақұлданған вакансияға сәйкес сақталған іздеуі бар пайдаланушыларға push.
+    if (!flagged) {
+      const matches = (savedSearches ?? []).filter((s) => {
+        if (s.position_id && s.position_id !== vacancy.position_id) return false;
+        if (s.settlement_id && s.settlement_id !== vacancy.settlement_id) return false;
+        if (s.district_id && s.district_id !== vacancy.district_id) return false;
+        if (s.region_id && s.region_id !== vacancy.region_id) return false;
+        return true;
+      });
+      for (const match of matches) {
+        if (match.user_id === employerUserId) continue;
+        await sendPushToUser(
+          supabase,
+          match.user_id,
+          'Жаңа вакансия! / Новая вакансия!',
+          'Сіз сақтаған іздеу бойынша жаңа вакансия шықты. / По сохранённому поиску появилась новая вакансия.'
         );
       }
     }

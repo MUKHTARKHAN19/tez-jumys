@@ -64,6 +64,11 @@ export default function ProfileScreen() {
             label: t('profile.blockedUsers'),
             onPress: () => router.push('/blocked-users'),
           },
+          {
+            icon: 'notifications-outline' as const,
+            label: t('profile.savedSearches'),
+            onPress: () => router.push('/saved-searches' as Href),
+          },
         ]
       : []),
     ...(isAdmin

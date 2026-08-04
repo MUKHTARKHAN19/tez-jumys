@@ -117,6 +117,11 @@ function AppNavigator() {
           options={{ title: t('titles.resetPassword'), presentation: 'modal' }}
         />
         <Stack.Screen name="blocked-users" options={{ title: t('titles.blockedUsers') }} />
+        <Stack.Screen name="saved-searches" options={{ title: t('titles.savedSearches') }} />
+        <Stack.Screen
+          name="vacancy-applications/[id]"
+          options={{ title: t('titles.vacancyApplications') }}
+        />
       </Stack>
     </ThemeProvider>
   );

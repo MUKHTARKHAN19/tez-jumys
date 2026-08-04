@@ -112,3 +112,34 @@ export interface Report {
   status: ReportStatus;
   created_at: string;
 }
+
+export type ApplicationStatus = 'new' | 'viewed';
+
+export interface Application {
+  id: string;
+  vacancy_id: string;
+  seeker_id: string;
+  status: ApplicationStatus;
+  created_at: string;
+}
+
+export interface ApplicationWithRelations extends Application {
+  seeker: SeekerWithRelations | null;
+}
+
+export interface SavedSearch {
+  id: string;
+  user_id: string;
+  position_id: string | null;
+  region_id: string | null;
+  district_id: string | null;
+  settlement_id: string | null;
+  created_at: string;
+}
+
+export interface SavedSearchWithRelations extends SavedSearch {
+  position: Position | null;
+  region: Region | null;
+  district: District | null;
+  settlement: Settlement | null;
+}

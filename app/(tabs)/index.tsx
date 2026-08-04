@@ -7,6 +7,7 @@ import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { VacancyCard } from '@/components/VacancyCard';
 import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { useAuth } from '@/lib/auth';
 import { useBrowseFilters } from '@/lib/browseFilters';
 import { useFavorites } from '@/lib/favorites';
 import { useLanguage } from '@/lib/i18n';
@@ -19,6 +20,7 @@ type SortOption = 'newest' | 'salary_desc';
 
 export default function VacanciesScreen() {
   const { t, localize } = useLanguage();
+  const { user } = useAuth();
   const { getSelection } = useLocationSelection();
   const locationSelection = getSelection('browse');
   const { salaryFilter } = useBrowseFilters();
@@ -30,6 +32,33 @@ export default function VacanciesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [vacancies, setVacancies] = useState<VacancyWithRelations[]>([]);
+  const [searchSaved, setSearchSaved] = useState(false);
+
+  const hasActiveSearch = !!(
+    selectedPositionId ||
+    locationSelection.regionId ||
+    locationSelection.districtId ||
+    locationSelection.settlementId
+  );
+
+  useEffect(() => {
+    setSearchSaved(false);
+  }, [selectedPositionId, locationSelection.regionId, locationSelection.districtId, locationSelection.settlementId]);
+
+  const handleSaveSearch = async () => {
+    if (!user) {
+      router.push('/auth');
+      return;
+    }
+    const { error } = await supabase.from('saved_searches').insert({
+      user_id: user.id,
+      position_id: selectedPositionId,
+      region_id: locationSelection.regionId,
+      district_id: locationSelection.districtId,
+      settlement_id: locationSelection.settlementId,
+    });
+    if (!error) setSearchSaved(true);
+  };
 
   useEffect(() => {
     supabase
@@ -182,6 +211,22 @@ export default function VacanciesScreen() {
         />
       </View>
 
+      {hasActiveSearch && (
+        <Pressable
+          style={styles.saveSearchRow}
+          onPress={handleSaveSearch}
+          disabled={searchSaved}>
+          <Ionicons
+            name={searchSaved ? 'checkmark-circle' : 'notifications-outline'}
+            size={16}
+            color={colors.accent}
+          />
+          <Text style={styles.saveSearchText}>
+            {searchSaved ? t('vacancies.searchSaved') : t('vacancies.saveSearch')}
+          </Text>
+        </Pressable>
+      )}
+
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator color={colors.accent} />
@@ -286,6 +331,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
+  },
+  saveSearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  saveSearchText: {
+    color: colors.accent,
+    fontSize: fontSize.xs,
+    fontWeight: '600',
   },
   loading: {
     flex: 1,
