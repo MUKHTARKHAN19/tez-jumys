@@ -20,6 +20,7 @@ export default function AdminVacanciesScreen() {
   const [vacancies, setVacancies] = useState<VacancyWithRelations[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [promotingId, setPromotingId] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -59,6 +60,16 @@ export default function AdminVacanciesScreen() {
       );
     }
     setBusyId(null);
+  };
+
+  const handlePromote = async (id: string, days: number) => {
+    const promotedUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+    await updateVacancy(id, { is_promoted: true, promoted_until: promotedUntil });
+    setPromotingId(null);
+  };
+
+  const handleUnpromote = async (id: string) => {
+    await updateVacancy(id, { is_promoted: false, promoted_until: null });
   };
 
   const handleDelete = async (id: string) => {
@@ -120,6 +131,28 @@ export default function AdminVacanciesScreen() {
               )}
             </View>
 
+            {promotingId === item.id && (
+              <View style={styles.confirmRow}>
+                <Text style={styles.confirmText}>{t('admin.promoteDurationPrompt')}</Text>
+                <View style={styles.actionsRow}>
+                  {[3, 7, 14].map((days) => (
+                    <Pressable
+                      key={days}
+                      style={styles.actionButton}
+                      onPress={() => handlePromote(item.id, days)}
+                      disabled={busyId === item.id}>
+                      <Text style={styles.actionText}>
+                        {t('admin.promoteDurationOption').replace('{days}', String(days))}
+                      </Text>
+                    </Pressable>
+                  ))}
+                  <Pressable style={styles.actionButton} onPress={() => setPromotingId(null)}>
+                    <Text style={styles.actionText}>{t('myAds.cancel')}</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
+
             {confirmDeleteId === item.id ? (
               <View style={styles.confirmRow}>
                 <Text style={styles.confirmText}>{t('myAds.deleteConfirmMessage')}</Text>
@@ -180,6 +213,25 @@ export default function AdminVacanciesScreen() {
                     </Text>
                   </Pressable>
                 )}
+
+                {item.moderation_status === 'approved' &&
+                  (item.is_promoted ? (
+                    <Pressable
+                      style={styles.actionButton}
+                      onPress={() => handleUnpromote(item.id)}
+                      disabled={busyId === item.id}>
+                      <Ionicons name="star" size={16} color={colors.accent} />
+                      <Text style={styles.actionText}>{t('admin.unpromoteAction')}</Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      style={styles.actionButton}
+                      onPress={() => setPromotingId(item.id)}
+                      disabled={busyId === item.id}>
+                      <Ionicons name="star-outline" size={16} color={colors.accent} />
+                      <Text style={styles.actionText}>{t('admin.promoteAction')}</Text>
+                    </Pressable>
+                  ))}
 
                 <Pressable
                   style={styles.actionButton}

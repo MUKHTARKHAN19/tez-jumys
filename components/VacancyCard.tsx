@@ -26,9 +26,17 @@ export function VacancyCard({ vacancy, onPress, isFavorite, onToggleFavorite }: 
     vacancy.salary_period
   );
 
+  const isPromoted =
+    vacancy.is_promoted && (!vacancy.promoted_until || new Date(vacancy.promoted_until) > new Date());
+
   return (
     <Pressable onPress={onPress}>
-      <Card style={styles.card}>
+      <Card style={isPromoted ? { ...styles.card, ...styles.cardPromoted } : styles.card}>
+        {isPromoted && (
+          <View style={styles.promotedBadge}>
+            <Text style={styles.promotedBadgeText}>{t('vacancyCard.promotedBadge')}</Text>
+          </View>
+        )}
         <View style={styles.headerRow}>
           <Text style={styles.position} numberOfLines={1}>
             {vacancy.position ? localize(vacancy.position) : t('vacancyCard.positionFallback')}{' '}
@@ -79,6 +87,22 @@ export function VacancyCard({ vacancy, onPress, isFavorite, onToggleFavorite }: 
 const styles = StyleSheet.create({
   card: {
     gap: spacing.sm,
+  },
+  cardPromoted: {
+    borderColor: colors.accent,
+    borderWidth: 1.5,
+  },
+  promotedBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.accent,
+    borderRadius: radii.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
+  promotedBadgeText: {
+    color: colors.white,
+    fontSize: fontSize.xs,
+    fontWeight: '700',
   },
   headerRow: {
     flexDirection: 'row',

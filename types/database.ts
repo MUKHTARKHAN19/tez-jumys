@@ -63,6 +63,8 @@ export interface Vacancy {
   moderation_note: string | null;
   views_count: number;
   calls_count: number;
+  is_promoted: boolean;
+  promoted_until: string | null;
   created_at: string;
 }
 

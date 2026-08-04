@@ -84,7 +84,8 @@ export default function VacanciesScreen() {
         )
         .eq('is_active', true)
         .eq('moderation_status', 'approved')
-        .gte('created_at', minCreatedAt);
+        .gte('created_at', minCreatedAt)
+        .order('is_promoted', { ascending: false });
 
       if (sortBy === 'salary_desc') {
         query = query.order('salary_to', { ascending: false, nullsFirst: false });
