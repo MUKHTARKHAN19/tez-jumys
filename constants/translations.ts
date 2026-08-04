@@ -68,6 +68,8 @@ const kk = {
   'post.updateButton': 'Сақтау',
   'post.errorNoEmployer': 'Алдымен бизнес профилін толтырыңыз.',
   'post.errorRequiredFields': 'Лауазым, орналасқан жері және байланыс телефонын толтырыңыз.',
+  'post.errorRateLimit':
+    'Тым көп вакансия жарияладыңыз. Сағат/тәулік лимитіне жеттіңіз, кейінірек қайталап көріңіз.',
 
   'myAds.authMessage': 'Өз хабарландыруларыңызды көру үшін алдымен аккаунтқа кіріңіз.',
   'myAds.emptyTitle': 'Сізде жарияланған хабарландыру жоқ',
@@ -197,6 +199,7 @@ const kk = {
   'report.reasonFraud': 'Алаяқтық',
   'report.reasonOther': 'Басқа себеп',
   'report.sentMessage': 'Шағым жіберілді, рахмет!',
+  'report.limitReachedMessage': 'Бүгінгі шағым лимитіне жеттіңіз. Ертең қайталап көріңіз.',
 
   'admin.accessDeniedTitle': 'Қолжетімді емес',
   'admin.accessDeniedMessage': 'Бұл бөлім тек әкімшілерге арналған.',
@@ -375,6 +378,8 @@ const ru: Record<keyof typeof kk, string> = {
   'post.updateButton': 'Сохранить',
   'post.errorNoEmployer': 'Сначала заполните бизнес-профиль.',
   'post.errorRequiredFields': 'Заполните должность, местоположение и контактный телефон.',
+  'post.errorRateLimit':
+    'Вы разместили слишком много вакансий. Достигнут почасовой/суточный лимит, попробуйте позже.',
 
   'myAds.authMessage': 'Чтобы посмотреть свои объявления, сначала войдите в аккаунт.',
   'myAds.emptyTitle': 'У вас нет опубликованных объявлений',
@@ -504,6 +509,7 @@ const ru: Record<keyof typeof kk, string> = {
   'report.reasonFraud': 'Мошенничество',
   'report.reasonOther': 'Другая причина',
   'report.sentMessage': 'Жалоба отправлена, спасибо!',
+  'report.limitReachedMessage': 'Вы достигли дневного лимита жалоб. Попробуйте завтра.',
 
   'admin.accessDeniedTitle': 'Доступ запрещён',
   'admin.accessDeniedMessage': 'Этот раздел только для администраторов.',

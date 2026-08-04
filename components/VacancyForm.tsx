@@ -136,7 +136,11 @@ export function VacancyForm({ employer, initialVacancy, locationTarget, onSaved 
     setSaving(false);
 
     if (saveError) {
-      setStatusOverlay({ type: 'error', message: saveError.message });
+      const isRateLimit = saveError.message.includes('rate_limit');
+      setStatusOverlay({
+        type: 'error',
+        message: isRateLimit ? t('post.errorRateLimit') : saveError.message,
+      });
       return;
     }
 

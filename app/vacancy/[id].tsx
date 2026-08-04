@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Linking, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ExpoLinking from 'expo-linking';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { BlockButton } from '@/components/BlockButton';
@@ -241,9 +242,14 @@ export default function VacancyDetailScreen() {
               : vacancy.region
                 ? localize(vacancy.region)
                 : '';
-          const lines = [positionText, salaryLabel, locationText, vacancy.contact_phone].filter(
-            Boolean
-          );
+          const shareUrl = ExpoLinking.createURL(`/vacancy/${vacancy.id}`);
+          const lines = [
+            positionText,
+            salaryLabel,
+            locationText,
+            vacancy.contact_phone,
+            shareUrl,
+          ].filter(Boolean);
           Share.share({ message: lines.join('\n') });
         }}
       />

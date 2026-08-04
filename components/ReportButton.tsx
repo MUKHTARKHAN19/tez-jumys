@@ -21,6 +21,7 @@ export function ReportButton({ targetType, targetId }: ReportButtonProps) {
   const [open, setOpen] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
 
   const handlePress = () => {
     if (!user) {
@@ -28,13 +29,23 @@ export function ReportButton({ targetType, targetId }: ReportButtonProps) {
       return;
     }
     setSent(false);
+    setLimitReached(false);
     setOpen(true);
   };
 
   const submitReport = async (reason: string) => {
+    if (!user) return;
     setSubmitting(true);
-    await supabase.from('reports').insert({ target_type: targetType, target_id: targetId, reason });
+    const { error } = await supabase
+      .from('reports')
+      .insert({ target_type: targetType, target_id: targetId, reason, reporter_id: user.id });
     setSubmitting(false);
+
+    if (error) {
+      setLimitReached(true);
+      return;
+    }
+
     setSent(true);
     setTimeout(() => setOpen(false), 1200);
   };
@@ -60,6 +71,11 @@ export function ReportButton({ targetType, targetId }: ReportButtonProps) {
               <>
                 <Ionicons name="checkmark-circle" size={40} color={colors.success} />
                 <Text style={styles.title}>{t('report.sentMessage')}</Text>
+              </>
+            ) : limitReached ? (
+              <>
+                <Ionicons name="alert-circle" size={40} color={colors.danger} />
+                <Text style={styles.title}>{t('report.limitReachedMessage')}</Text>
               </>
             ) : (
               <>

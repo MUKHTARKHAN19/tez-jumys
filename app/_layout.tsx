@@ -12,6 +12,8 @@ import { BrowseFiltersProvider } from '@/lib/browseFilters';
 import { FavoritesProvider } from '@/lib/favorites';
 import { LanguageProvider, useLanguage } from '@/lib/i18n';
 import { LocationSelectionProvider } from '@/lib/locationSelection';
+import { Sentry } from '@/lib/sentry';
+import { checkForUpdatesAsync } from '@/lib/updates';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -33,7 +35,7 @@ const navigationTheme = {
   },
 };
 
-export default function RootLayout() {
+function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -47,6 +49,10 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  useEffect(() => {
+    checkForUpdatesAsync();
+  }, []);
 
   if (!loaded) {
     return null;
@@ -66,6 +72,8 @@ export default function RootLayout() {
     </AuthProvider>
   );
 }
+
+export default Sentry.wrap(RootLayout);
 
 function AppNavigator() {
   const { t } = useLanguage();
