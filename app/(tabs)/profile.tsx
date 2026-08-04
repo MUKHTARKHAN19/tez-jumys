@@ -1,4 +1,5 @@
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Linking, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, type Href } from 'expo-router';
 
@@ -9,10 +10,35 @@ import { ScreenContainer } from '@/components/ScreenContainer';
 import { colors, fontSize, radii, spacing } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage, type AppLanguage } from '@/lib/i18n';
+import {
+  hasPushToken,
+  registerForPushNotifications,
+  unregisterPushNotifications,
+} from '@/lib/pushNotifications';
 
 export default function ProfileScreen() {
   const { language, setLanguage, t } = useLanguage();
   const { user, isAdmin, signOut } = useAuth();
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationsBusy, setNotificationsBusy] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    hasPushToken(user.id).then(setNotificationsEnabled);
+  }, [user]);
+
+  const handleToggleNotifications = async (value: boolean) => {
+    if (!user) return;
+    setNotificationsBusy(true);
+    if (value) {
+      const granted = await registerForPushNotifications(user.id);
+      setNotificationsEnabled(granted);
+    } else {
+      await unregisterPushNotifications(user.id);
+      setNotificationsEnabled(false);
+    }
+    setNotificationsBusy(false);
+  };
 
   const menuItems: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
     { icon: 'heart-outline', label: t('profile.favorites'), onPress: () => router.push('/favorites') },
@@ -98,6 +124,23 @@ export default function ProfileScreen() {
           />
         </View>
       </Card>
+
+      {user && (
+        <Card style={styles.notificationsRow}>
+          <Ionicons name="notifications-outline" size={20} color={colors.accent} />
+          <Text style={styles.notificationsLabel}>{t('profile.notifications')}</Text>
+          {notificationsBusy ? (
+            <ActivityIndicator color={colors.accent} />
+          ) : (
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={handleToggleNotifications}
+              trackColor={{ false: colors.surfaceAlt, true: colors.accent }}
+              thumbColor={colors.white}
+            />
+          )}
+        </Card>
+      )}
 
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         {menuItems.map((item, index) => (
@@ -205,6 +248,17 @@ const styles = StyleSheet.create({
   },
   languageTextActive: {
     color: colors.white,
+  },
+  notificationsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  notificationsLabel: {
+    flex: 1,
+    color: colors.text,
+    fontSize: fontSize.sm,
+    fontWeight: '600',
   },
   menuRow: {
     flexDirection: 'row',

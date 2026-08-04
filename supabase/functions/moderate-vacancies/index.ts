@@ -102,6 +102,23 @@ function buildBannedWordRegexes(words: string[]) {
     .map((word) => ({ word, regex: new RegExp(buildFlexiblePattern(word), 'gi') }));
 }
 
+// deno-lint-ignore no-explicit-any
+async function sendPushToUser(supabase: any, userId: string, title: string, body: string) {
+  const { data: tokens } = await supabase.from('push_tokens').select('token').eq('user_id', userId);
+  const rows = (tokens ?? []) as { token: string }[];
+  if (rows.length === 0) return;
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate',
+    },
+    body: JSON.stringify(rows.map((row) => ({ to: row.token, title, body }))),
+  });
+}
+
 Deno.serve(async () => {
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
@@ -139,7 +156,7 @@ Deno.serve(async () => {
   const { data: pending, error } = await supabase
     .from('vacancies')
     .select(
-      'id, description, position:positions(name_kk, name_ru), employer:employers(business_name)'
+      'id, description, position:positions(name_kk, name_ru), employer:employers(business_name, user_id)'
     )
     .eq('moderation_status', 'pending')
     .lte('created_at', oneMinuteAgo)
@@ -208,6 +225,25 @@ Deno.serve(async () => {
     }
 
     await supabase.from('vacancies').update(updates).eq('id', vacancy.id);
+
+    const employerUserId = vacancy.employer?.user_id;
+    if (employerUserId) {
+      if (flagged) {
+        await sendPushToUser(
+          supabase,
+          employerUserId,
+          'Вакансия қабылданбады ❌ / Вакансия отклонена ❌',
+          'Себебі: қауымдастық ережелерін бұзу. / Причина: нарушение правил сообщества.'
+        );
+      } else {
+        await sendPushToUser(
+          supabase,
+          employerUserId,
+          'Вакансия мақұлданды ✅ / Вакансия одобрена ✅',
+          'Сіздің вакансияңыз жарияланды. / Ваша вакансия опубликована.'
+        );
+      }
+    }
 
     results.push({ id: vacancy.id, flagged, censored });
   }

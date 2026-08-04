@@ -39,10 +39,21 @@
         {
           "photosPermission": "tez-jumys суреттеріңізге қол жеткізу үшін рұқсат сұрайды."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#7C6FE8"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "aa31630f-d4ff-4658-9a3f-44e084951a17"
+      }
     }
   }
 }

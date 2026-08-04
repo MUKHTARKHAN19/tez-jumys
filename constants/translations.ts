@@ -91,6 +91,7 @@ const kk = {
   'profile.helpCenter': 'Көмек орталығы',
   'profile.signOut': 'Шығу',
   'profile.supportEmailPrefix': 'Сұрақтарыңыз болса: ',
+  'profile.notifications': 'Хабарландырулар',
 
   'businessProfile.authMessage': 'Бизнес профилін толтыру үшін алдымен аккаунтқа кіріңіз.',
   'businessProfile.intro':
@@ -377,6 +378,7 @@ const ru: Record<keyof typeof kk, string> = {
   'profile.helpCenter': 'Центр помощи',
   'profile.signOut': 'Выйти',
   'profile.supportEmailPrefix': 'Если есть вопросы: ',
+  'profile.notifications': 'Уведомления',
 
   'businessProfile.authMessage': 'Чтобы заполнить бизнес-профиль, сначала войдите в аккаунт.',
   'businessProfile.intro':
