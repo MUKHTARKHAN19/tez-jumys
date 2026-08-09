@@ -1,11 +1,15 @@
+import { useMemo } from 'react';
 import { Link, Stack } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { colors, fontSize, spacing } from '@/constants/theme';
+import { fontSize, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 export default function NotFoundScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   return (
     <>
@@ -21,7 +25,8 @@ export default function NotFoundScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

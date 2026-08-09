@@ -1,18 +1,20 @@
-import { DarkTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
 import 'react-native-reanimated';
 
-import { colors } from '@/constants/theme';
+import { AnimatedSplash } from '@/components/AnimatedSplash';
 import { AuthProvider } from '@/lib/auth';
 import { BrowseFiltersProvider } from '@/lib/browseFilters';
 import { FavoritesProvider } from '@/lib/favorites';
 import { LanguageProvider, useLanguage } from '@/lib/i18n';
 import { LocationSelectionProvider } from '@/lib/locationSelection';
 import { Sentry } from '@/lib/sentry';
+import { ThemeProvider as AppThemeProvider, useTheme } from '@/lib/theme';
 import { checkForUpdatesAsync } from '@/lib/updates';
 
 export { ErrorBoundary } from 'expo-router';
@@ -23,22 +25,13 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-const navigationTheme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    background: colors.background,
-    card: colors.backgroundElevated,
-    text: colors.text,
-    border: colors.border,
-    primary: colors.accent,
-  },
-};
-
 function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  // Суық қосылғанда бір рет қана көрсетіледі — RootLayout қайта mount
+  // болмайынша (яғни қосымша толық қайта ашылмайынша) қайта ойналмайды.
+  const [showAnimatedSplash, setShowAnimatedSplash] = useState(true);
 
   useEffect(() => {
     if (error) throw error;
@@ -59,17 +52,24 @@ function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <LanguageProvider>
-        <LocationSelectionProvider>
-          <BrowseFiltersProvider>
-            <FavoritesProvider>
-              <AppNavigator />
-            </FavoritesProvider>
-          </BrowseFiltersProvider>
-        </LocationSelectionProvider>
-      </LanguageProvider>
-    </AuthProvider>
+    <View style={{ flex: 1 }}>
+      <AppThemeProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <LocationSelectionProvider>
+              <BrowseFiltersProvider>
+                <FavoritesProvider>
+                  <AppNavigator />
+                </FavoritesProvider>
+              </BrowseFiltersProvider>
+            </LocationSelectionProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </AppThemeProvider>
+      {showAnimatedSplash && (
+        <AnimatedSplash onFinish={() => setShowAnimatedSplash(false)} />
+      )}
+    </View>
   );
 }
 
@@ -77,10 +77,26 @@ export default Sentry.wrap(RootLayout);
 
 function AppNavigator() {
   const { t } = useLanguage();
+  const { colors, isDark } = useTheme();
+
+  const navigationTheme = useMemo(
+    () => ({
+      ...(isDark ? DarkTheme : DefaultTheme),
+      colors: {
+        ...(isDark ? DarkTheme.colors : DefaultTheme.colors),
+        background: colors.background,
+        card: colors.backgroundElevated,
+        text: colors.text,
+        border: colors.border,
+        primary: colors.accent,
+      },
+    }),
+    [isDark, colors]
+  );
 
   return (
     <ThemeProvider value={navigationTheme}>
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.backgroundElevated },

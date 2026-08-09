@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -6,16 +6,19 @@ import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, spacing } from '@/constants/theme';
+import { fontSize, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { useLocationSelection, type LocationSelectionTarget } from '@/lib/locationSelection';
+import { useTheme } from '@/lib/theme';
 import type { District, Region, Settlement } from '@/types/database';
 
 export default function LocationFilterScreen() {
   const { t, localize } = useLanguage();
   const { target } = useLocalSearchParams<{ target?: LocationSelectionTarget }>();
   const { setSelection } = useLocationSelection();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const resolvedTarget: LocationSelectionTarget = target ?? 'browse';
 
   const [loadingRegions, setLoadingRegions] = useState(true);
@@ -105,6 +108,11 @@ export default function LocationFilterScreen() {
           <EmptyState icon="map-outline" title={t('locationFilter.noRegions')} />
         ) : (
           <View style={styles.chipsWrap}>
+            <Chip
+              label={t('vacancies.allCities')}
+              selected={!regionId}
+              onPress={() => setRegionId(null)}
+            />
             {regions.map((region) => (
               <Chip
                 key={region.id}
@@ -162,7 +170,8 @@ export default function LocationFilterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
   loading: {
     flex: 1,
     alignItems: 'center',

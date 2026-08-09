@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 import { uploadImageAsync } from '@/lib/uploadImage';
 
 type ImagePickerFieldProps = {
@@ -16,6 +17,8 @@ type ImagePickerFieldProps = {
 
 export function ImagePickerField({ value, onChange, uploadPath, label }: ImagePickerFieldProps) {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,40 +69,41 @@ export function ImagePickerField({ value, onChange, uploadPath, label }: ImagePi
   );
 }
 
-const styles = StyleSheet.create({
-  field: {
-    gap: spacing.sm,
-  },
-  label: {
-    color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  box: {
-    width: 110,
-    height: 110,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  preview: {
-    width: '100%',
-    height: '100%',
-  },
-  placeholder: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  placeholderText: {
-    color: colors.textSecondary,
-    fontSize: fontSize.xs,
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: fontSize.xs,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    field: {
+      gap: spacing.sm,
+    },
+    label: {
+      color: colors.text,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    box: {
+      width: 110,
+      height: 110,
+      borderRadius: radii.lg,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+    },
+    preview: {
+      width: '100%',
+      height: '100%',
+    },
+    placeholder: {
+      alignItems: 'center',
+      gap: 4,
+    },
+    placeholderText: {
+      color: colors.textSecondary,
+      fontSize: fontSize.xs,
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: fontSize.xs,
+    },
+  });

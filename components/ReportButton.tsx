@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 import { Chip } from '@/components/Chip';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { ReportTargetType } from '@/types/database';
 
 type ReportButtonProps = {
@@ -18,6 +19,8 @@ type ReportButtonProps = {
 export function ReportButton({ targetType, targetId }: ReportButtonProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [open, setOpen] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -98,42 +101,43 @@ export function ReportButton({ targetType, targetId }: ReportButtonProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    alignSelf: 'flex-start',
-  },
-  triggerText: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-  },
-  backdrop: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: spacing.lg,
-  },
-  card: {
-    alignItems: 'center',
-    gap: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    minWidth: 260,
-  },
-  title: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  reasonsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    trigger: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      alignSelf: 'flex-start',
+    },
+    triggerText: {
+      color: colors.textMuted,
+      fontSize: fontSize.xs,
+    },
+    backdrop: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      padding: spacing.lg,
+    },
+    card: {
+      alignItems: 'center',
+      gap: spacing.md,
+      backgroundColor: colors.surface,
+      borderRadius: radii.lg,
+      padding: spacing.lg,
+      minWidth: 260,
+    },
+    title: {
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    reasonsWrap: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: spacing.sm,
+    },
+  });

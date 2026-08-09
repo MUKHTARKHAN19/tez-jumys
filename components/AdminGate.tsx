@@ -4,13 +4,15 @@ import { router } from 'expo-router';
 
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
-import { colors, spacing } from '@/constants/theme';
+import { spacing } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 export function AdminGate({ children }: PropsWithChildren) {
   const { user, loading, isAdmin } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
 
   if (loading) {
     return (

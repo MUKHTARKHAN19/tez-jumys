@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
@@ -8,10 +8,11 @@ import { Card } from '@/components/Card';
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { VacancyForm } from '@/components/VacancyForm';
-import { colors, fontSize, spacing } from '@/constants/theme';
+import { fontSize, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { Employer } from '@/types/database';
 
 export default function PostVacancyScreen() {
@@ -26,6 +27,8 @@ export default function PostVacancyScreen() {
 function PostVacancyContent() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(true);
   const [employer, setEmployer] = useState<Employer | null>(null);
 
@@ -79,7 +82,8 @@ function PostVacancyContent() {
   return <VacancyForm employer={employer} locationTarget="post" onSaved={() => {}} />;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
   loading: {
     flex: 1,
     alignItems: 'center',

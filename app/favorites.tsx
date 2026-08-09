@@ -4,14 +4,16 @@ import { router, useFocusEffect } from 'expo-router';
 
 import { EmptyState } from '@/components/EmptyState';
 import { VacancyCard } from '@/components/VacancyCard';
-import { colors, spacing } from '@/constants/theme';
+import { spacing } from '@/constants/theme';
 import { useFavorites } from '@/lib/favorites';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { VacancyWithRelations } from '@/types/database';
 
 export default function FavoritesScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
   const [loading, setLoading] = useState(true);
   const [vacancies, setVacancies] = useState<VacancyWithRelations[]>([]);

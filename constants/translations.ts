@@ -38,6 +38,7 @@ const kk = {
   'vacancies.searchPlaceholder': 'Лауазым немесе компания бойынша іздеу',
   'vacancies.sortNewest': 'Жаңасынан',
   'vacancies.sortSalary': 'Жалақы бойынша',
+  'vacancies.seeAllPositions': 'Барлық жұмыс түрлерін көру',
   'vacancies.saveSearch': '🔔 Осы іздеуді сақтау',
   'vacancies.searchSaved': 'Сақталды ✓',
 
@@ -96,6 +97,9 @@ const kk = {
   'profile.loginNotice': 'Вакансия жариялау және өз хабарландыруларыңызды басқару үшін жүйеге кіріңіз.',
   'profile.loginButton': 'Кіру / Тіркелу',
   'profile.languageLabel': 'Тіл',
+  'profile.themeLabel': 'Тақырып',
+  'profile.themeDark': 'Түнгі 🌙',
+  'profile.themeLight': 'Күндізгі ☀️',
   'profile.businessProfile': 'Бизнес профилі',
   'profile.helpCenter': 'Көмек орталығы',
   'profile.signOut': 'Шығу',
@@ -114,6 +118,9 @@ const kk = {
   'businessProfile.saveButton': 'Сақтау',
   'businessProfile.errorRequired': 'Атауы мен байланыс телефонын толтырыңыз.',
 
+  'filter.positionLabel': 'Лауазым',
+  'filter.positionSearchPlaceholder': 'Лауазымды іздеу...',
+  'filter.positionNoResults': 'Ештеңе табылмады',
   'filter.salaryRangeLabel': 'Жалақы аралығы',
   'filter.from': 'Бастап',
   'filter.to': 'Дейін',
@@ -140,7 +147,7 @@ const kk = {
   'vacancyDetail.shareButton': 'Бөлісу',
   'vacancyDetail.applyButton': 'Өтініш беру',
   'vacancyDetail.appliedButton': 'Өтініш берілді ✓',
-  'vacancyDetail.paymentWarning': 'Жұмысқа орналасу үшін ешқашан алдын ала ақша төлемеңіз',
+  'vacancyDetail.paymentWarning': 'Жұмысқа орналасу үшін ешқашан ақша төлемеңіз',
 
   'auth.emailLabel': 'Email',
   'auth.passwordLabel': 'Құпия сөз',
@@ -353,6 +360,7 @@ const ru: Record<keyof typeof kk, string> = {
   'vacancies.searchPlaceholder': 'Поиск по должности или компании',
   'vacancies.sortNewest': 'Сначала новые',
   'vacancies.sortSalary': 'По зарплате',
+  'vacancies.seeAllPositions': 'Смотреть все виды работ',
   'vacancies.saveSearch': '🔔 Сохранить этот поиск',
   'vacancies.searchSaved': 'Сохранено ✓',
 
@@ -411,6 +419,9 @@ const ru: Record<keyof typeof kk, string> = {
   'profile.loginNotice': 'Войдите в систему, чтобы публиковать вакансии и управлять объявлениями.',
   'profile.loginButton': 'Войти / Зарегистрироваться',
   'profile.languageLabel': 'Язык',
+  'profile.themeLabel': 'Тема',
+  'profile.themeDark': 'Ночная 🌙',
+  'profile.themeLight': 'Дневная ☀️',
   'profile.businessProfile': 'Бизнес-профиль',
   'profile.helpCenter': 'Центр помощи',
   'profile.signOut': 'Выйти',
@@ -429,6 +440,9 @@ const ru: Record<keyof typeof kk, string> = {
   'businessProfile.saveButton': 'Сохранить',
   'businessProfile.errorRequired': 'Заполните название и контактный телефон.',
 
+  'filter.positionLabel': 'Должность',
+  'filter.positionSearchPlaceholder': 'Поиск должности...',
+  'filter.positionNoResults': 'Ничего не найдено',
   'filter.salaryRangeLabel': 'Диапазон зарплаты',
   'filter.from': 'От',
   'filter.to': 'До',
@@ -455,7 +469,7 @@ const ru: Record<keyof typeof kk, string> = {
   'vacancyDetail.shareButton': 'Поделиться',
   'vacancyDetail.applyButton': 'Откликнуться',
   'vacancyDetail.appliedButton': 'Отклик отправлен ✓',
-  'vacancyDetail.paymentWarning': 'Никогда не платите деньги вперёд за трудоустройство',
+  'vacancyDetail.paymentWarning': 'Никогда не платите деньги за трудоустройство',
 
   'auth.emailLabel': 'Email',
   'auth.passwordLabel': 'Пароль',

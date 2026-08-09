@@ -6,28 +6,45 @@ import { router, useFocusEffect } from 'expo-router';
 import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { VacancyCard } from '@/components/VacancyCard';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useBrowseFilters } from '@/lib/browseFilters';
 import { useFavorites } from '@/lib/favorites';
 import { useLanguage } from '@/lib/i18n';
 import { useLocationSelection } from '@/lib/locationSelection';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { Position, VacancyWithRelations } from '@/types/database';
 
 const LISTING_MAX_AGE_DAYS = 7;
 type SortOption = 'newest' | 'salary_desc';
 
+// Жоғарғы chip қатарында әрқашан көрінетін, ең жиі қолданылатын 10 лауазым
+// (қолмен бекітілген — кейін статистикаға қарай өзгертуге болады).
+const TOP_POSITION_KK_NAMES = [
+  'Аспаз',
+  'Даяшы',
+  'Сатушы',
+  'Курьер',
+  'Жүргізуші',
+  'Құрылысшы',
+  'Тазалаушы',
+  'Күзетші',
+  'Қара жұмысшы',
+  'Кассир',
+];
+
 export default function VacanciesScreen() {
   const { t, localize } = useLanguage();
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { getSelection } = useLocationSelection();
   const locationSelection = getSelection('browse');
-  const { salaryFilter } = useBrowseFilters();
+  const { salaryFilter, selectedPositionIds, togglePositionId } = useBrowseFilters();
   const { isFavorite, toggleFavorite } = useFavorites();
 
   const [positions, setPositions] = useState<Position[]>([]);
-  const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -35,15 +52,24 @@ export default function VacanciesScreen() {
   const [searchSaved, setSearchSaved] = useState(false);
 
   const hasActiveSearch = !!(
-    selectedPositionId ||
+    selectedPositionIds.length > 0 ||
     locationSelection.regionId ||
     locationSelection.districtId ||
     locationSelection.settlementId
   );
+  const hasActiveFilter =
+    selectedPositionIds.length > 0 ||
+    salaryFilter.salaryFrom !== null ||
+    salaryFilter.salaryTo !== null;
 
   useEffect(() => {
     setSearchSaved(false);
-  }, [selectedPositionId, locationSelection.regionId, locationSelection.districtId, locationSelection.settlementId]);
+  }, [
+    selectedPositionIds,
+    locationSelection.regionId,
+    locationSelection.districtId,
+    locationSelection.settlementId,
+  ]);
 
   const handleSaveSearch = async () => {
     if (!user) {
@@ -52,7 +78,7 @@ export default function VacanciesScreen() {
     }
     const { error } = await supabase.from('saved_searches').insert({
       user_id: user.id,
-      position_id: selectedPositionId,
+      position_id: selectedPositionIds.length === 1 ? selectedPositionIds[0] : null,
       region_id: locationSelection.regionId,
       district_id: locationSelection.districtId,
       settlement_id: locationSelection.settlementId,
@@ -67,6 +93,24 @@ export default function VacanciesScreen() {
       .order('name_kk')
       .then(({ data }) => setPositions(data ?? []));
   }, []);
+
+  const topPositions = useMemo(
+    () =>
+      TOP_POSITION_KK_NAMES.map((name) => positions.find((p) => p.name_kk === name)).filter(
+        (p): p is Position => !!p
+      ),
+    [positions]
+  );
+
+  // Топ-10-да жоқ, бірақ сүзгі панелінен таңдалған лауазым болса — уақытша
+  // chip қатарының басына қосып көрсетеміз.
+  const displayedChipPositions = useMemo(() => {
+    const topIds = new Set(topPositions.map((p) => p.id));
+    const extraSelected = positions.filter(
+      (p) => selectedPositionIds.includes(p.id) && !topIds.has(p.id)
+    );
+    return [...extraSelected, ...topPositions];
+  }, [positions, topPositions, selectedPositionIds]);
 
   useFocusEffect(
     useCallback(() => {
@@ -93,7 +137,7 @@ export default function VacanciesScreen() {
         query = query.order('created_at', { ascending: false });
       }
 
-      if (selectedPositionId) query = query.eq('position_id', selectedPositionId);
+      if (selectedPositionIds.length > 0) query = query.in('position_id', selectedPositionIds);
       if (locationSelection.settlementId) {
         query = query.eq('settlement_id', locationSelection.settlementId);
       } else if (locationSelection.districtId) {
@@ -120,7 +164,7 @@ export default function VacanciesScreen() {
         cancelled = true;
       };
     }, [
-      selectedPositionId,
+      selectedPositionIds,
       sortBy,
       locationSelection.regionId,
       locationSelection.districtId,
@@ -162,6 +206,7 @@ export default function VacanciesScreen() {
 
         <Pressable style={styles.filterButton} onPress={() => router.push('/filter')}>
           <Ionicons name="options-outline" size={20} color={colors.white} />
+          {hasActiveFilter && <View style={styles.filterBadge} />}
         </Pressable>
       </View>
 
@@ -185,18 +230,25 @@ export default function VacanciesScreen() {
         horizontal
         style={styles.chipsList}
         showsHorizontalScrollIndicator={false}
-        data={positions}
+        data={displayedChipPositions}
+        extraData={selectedPositionIds}
+        initialNumToRender={displayedChipPositions.length || 20}
+        removeClippedSubviews={false}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.chipsRow}
         renderItem={({ item }) => (
           <Chip
             label={localize(item)}
-            selected={selectedPositionId === item.id}
-            onPress={() =>
-              setSelectedPositionId((current) => (current === item.id ? null : item.id))
-            }
+            selected={selectedPositionIds.includes(item.id)}
+            onPress={() => togglePositionId(item.id)}
           />
         )}
+        ListFooterComponent={
+          <Pressable style={styles.seeAllChip} onPress={() => router.push('/filter')}>
+            <Text style={styles.seeAllChipText}>{t('vacancies.seeAllPositions')}</Text>
+            <Ionicons name="arrow-forward" size={14} color={colors.accent} />
+          </Pressable>
+        }
       />
 
       <View style={styles.sortRow}>
@@ -259,7 +311,8 @@ export default function VacanciesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -297,6 +350,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  filterBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    backgroundColor: colors.danger,
+    borderWidth: 1.5,
+    borderColor: colors.background,
+  },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -318,12 +382,28 @@ const styles = StyleSheet.create({
   },
   chipsList: {
     flexGrow: 0,
+    minHeight: 52,
   },
   chipsRow: {
     alignItems: 'flex-start',
     gap: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
+  },
+  seeAllChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: colors.accent,
+  },
+  seeAllChipText: {
+    color: colors.accent,
+    fontSize: fontSize.sm,
+    fontWeight: '600',
   },
   sortRow: {
     flexDirection: 'row',

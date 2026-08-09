@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
@@ -8,12 +8,13 @@ import { Chip } from '@/components/Chip';
 import { EulaModal } from '@/components/EulaModal';
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { acceptEula, hasAcceptedEula } from '@/lib/eula';
 import { useLanguage } from '@/lib/i18n';
 import { useLocationSelection } from '@/lib/locationSelection';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { District, Position, Region, Seeker, Settlement } from '@/types/database';
 
 export default function SeekerProfileScreen() {
@@ -34,6 +35,8 @@ type SeekerRow = Seeker & {
 function SeekerProfileForm() {
   const { user } = useAuth();
   const { t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { getSelection, setSelection } = useLocationSelection();
   const locationSelection = getSelection('seeker-profile');
 
@@ -253,57 +256,58 @@ function SeekerProfileForm() {
   );
 }
 
-const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  intro: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-  },
-  noticeCard: {
-    backgroundColor: colors.accentSoft,
-    borderColor: colors.accent,
-  },
-  noticeText: {
-    color: colors.accent,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  field: {
-    gap: spacing.sm,
-  },
-  label: {
-    color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  chipsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-  textArea: {
-    minHeight: 90,
-    textAlignVertical: 'top',
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: fontSize.sm,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    intro: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      lineHeight: 20,
+    },
+    noticeCard: {
+      backgroundColor: colors.accentSoft,
+      borderColor: colors.accent,
+    },
+    noticeText: {
+      color: colors.accent,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    field: {
+      gap: spacing.sm,
+    },
+    label: {
+      color: colors.text,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    chipsWrap: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm + 4,
+      color: colors.text,
+      fontSize: fontSize.md,
+    },
+    textArea: {
+      minHeight: 90,
+      textAlignVertical: 'top',
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: fontSize.sm,
+    },
+  });

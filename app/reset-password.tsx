@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 
 // Supabase жобасының баптауына қарай қалпына келтіру сілтемесі екі түрлі болуы
 // мүмкін: ескі "implicit" ағыны (#access_token=...&refresh_token=...) немесе
@@ -19,6 +20,8 @@ function extractRecoveryParams(url: string): URLSearchParams | null {
 
 export default function ResetPasswordScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [checking, setChecking] = useState(true);
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState('');
@@ -158,38 +161,39 @@ export default function ResetPasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  intro: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-  },
-  field: {
-    gap: spacing.sm,
-  },
-  label: {
-    color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: fontSize.sm,
-  },
-  successText: {
-    color: colors.success,
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    intro: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      lineHeight: 20,
+    },
+    field: {
+      gap: spacing.sm,
+    },
+    label: {
+      color: colors.text,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm + 4,
+      color: colors.text,
+      fontSize: fontSize.md,
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: fontSize.sm,
+    },
+    successText: {
+      color: colors.success,
+      fontSize: fontSize.md,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+  });

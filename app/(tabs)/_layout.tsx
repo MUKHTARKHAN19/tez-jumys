@@ -2,11 +2,12 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { HeaderBrand } from '@/components/HeaderBrand';
-import { colors } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 export default function TabLayout() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
 
   return (
     <Tabs

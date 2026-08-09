@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect, type Href } from 'expo-router';
@@ -7,10 +7,11 @@ import { AuthGate } from '@/components/AuthGate';
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
 import { VacancyCard } from '@/components/VacancyCard';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { VacancyWithRelations } from '@/types/database';
 
 export default function MyAdsScreen() {
@@ -25,6 +26,8 @@ export default function MyAdsScreen() {
 function MyAdsList() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(true);
   const [vacancies, setVacancies] = useState<VacancyWithRelations[]>([]);
   const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
@@ -247,7 +250,8 @@ function MyAdsList() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
   itemWrap: {
     gap: spacing.sm,
   },

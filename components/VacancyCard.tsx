@@ -1,12 +1,14 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Card } from '@/components/Card';
 import { getScheduleLabel } from '@/constants/schedule';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { formatRelativeTime } from '@/lib/formatRelativeTime';
 import { formatSalary } from '@/lib/formatSalary';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 import type { VacancyWithRelations } from '@/types/database';
 
 type VacancyCardProps = {
@@ -18,6 +20,8 @@ type VacancyCardProps = {
 
 export function VacancyCard({ vacancy, onPress, isFavorite, onToggleFavorite }: VacancyCardProps) {
   const { language, t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const salaryLabel = formatSalary(
     vacancy.salary_from,
     vacancy.salary_to,
@@ -84,70 +88,71 @@ export function VacancyCard({ vacancy, onPress, isFavorite, onToggleFavorite }: 
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    gap: spacing.sm,
-  },
-  cardPromoted: {
-    borderColor: colors.accent,
-    borderWidth: 1.5,
-  },
-  promotedBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.accent,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-  },
-  promotedBadgeText: {
-    color: colors.white,
-    fontSize: fontSize.xs,
-    fontWeight: '700',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  position: {
-    flex: 1,
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '700',
-  },
-  scheduleTag: {
-    backgroundColor: colors.accentSoft,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-  },
-  scheduleText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-  businessName: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  salary: {
-    color: colors.success,
-    fontSize: fontSize.md,
-    fontWeight: '700',
-  },
-  footerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  location: {
-    flex: 1,
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  postedAt: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    card: {
+      gap: spacing.sm,
+    },
+    cardPromoted: {
+      borderColor: colors.accent,
+      borderWidth: 1.5,
+    },
+    promotedBadge: {
+      alignSelf: 'flex-start',
+      backgroundColor: colors.accent,
+      borderRadius: radii.pill,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+    },
+    promotedBadgeText: {
+      color: colors.white,
+      fontSize: fontSize.xs,
+      fontWeight: '700',
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.sm,
+    },
+    position: {
+      flex: 1,
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '700',
+    },
+    scheduleTag: {
+      backgroundColor: colors.accentSoft,
+      borderRadius: radii.pill,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 4,
+    },
+    scheduleText: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+    },
+    businessName: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    salary: {
+      color: colors.success,
+      fontSize: fontSize.md,
+      fontWeight: '700',
+    },
+    footerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
+    location: {
+      flex: 1,
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    postedAt: {
+      color: colors.textMuted,
+      fontSize: fontSize.xs,
+    },
+  });

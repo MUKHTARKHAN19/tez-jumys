@@ -5,10 +5,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { AuthGate } from '@/components/AuthGate';
 import { EmptyState } from '@/components/EmptyState';
 import { VacancyForm } from '@/components/VacancyForm';
-import { colors } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { Employer, VacancyWithRelations } from '@/types/database';
 
 export default function VacancyEditScreen() {
@@ -23,6 +23,7 @@ export default function VacancyEditScreen() {
 function VacancyEditContent() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [employer, setEmployer] = useState<Employer | null>(null);

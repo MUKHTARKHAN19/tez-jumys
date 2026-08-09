@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
@@ -6,11 +6,12 @@ import { AuthGate } from '@/components/AuthGate';
 import { ImagePickerField } from '@/components/ImagePickerField';
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { useLocationSelection } from '@/lib/locationSelection';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { District, Employer, Region, Settlement } from '@/types/database';
 
 export default function BusinessProfileScreen() {
@@ -25,6 +26,8 @@ export default function BusinessProfileScreen() {
 function BusinessProfileForm() {
   const { user } = useAuth();
   const { t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { getSelection, setSelection } = useLocationSelection();
   const locationSelection = getSelection('business-profile');
 
@@ -187,38 +190,39 @@ function BusinessProfileForm() {
   );
 }
 
-const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  intro: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-  },
-  field: {
-    gap: spacing.sm,
-  },
-  label: {
-    color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: fontSize.sm,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    intro: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      lineHeight: 20,
+    },
+    field: {
+      gap: spacing.sm,
+    },
+    label: {
+      color: colors.text,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm + 4,
+      color: colors.text,
+      fontSize: fontSize.md,
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: fontSize.sm,
+    },
+  });

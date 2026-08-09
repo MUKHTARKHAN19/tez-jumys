@@ -1,11 +1,12 @@
 import { Stack } from 'expo-router';
 
 import { AdminGate } from '@/components/AdminGate';
-import { colors } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 export default function AdminLayout() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
 
   return (
     <AdminGate>

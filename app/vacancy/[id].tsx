@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Linking, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ExpoLinking from 'expo-linking';
@@ -11,13 +11,14 @@ import { PillButton } from '@/components/PillButton';
 import { ReportButton } from '@/components/ReportButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { getScheduleLabel } from '@/constants/schedule';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useFavorites } from '@/lib/favorites';
 import { formatRelativeTime } from '@/lib/formatRelativeTime';
 import { formatSalary } from '@/lib/formatSalary';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { VacancyWithRelations } from '@/types/database';
 
 function toWhatsAppDigits(phone: string) {
@@ -29,6 +30,8 @@ function toWhatsAppDigits(phone: string) {
 export default function VacancyDetailScreen() {
   const { language, t, localize } = useLanguage();
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { isFavorite, toggleFavorite } = useFavorites();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
@@ -173,7 +176,7 @@ export default function VacancyDetailScreen() {
       </Card>
 
       <View style={styles.warningBanner}>
-        <Ionicons name="warning-outline" size={18} color={colors.warning} />
+        <Ionicons name="warning-outline" size={13} color={colors.danger} />
         <Text style={styles.warningText}>{t('vacancyDetail.paymentWarning')}</Text>
       </View>
 
@@ -268,95 +271,94 @@ export default function VacancyDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  photo: {
-    width: '100%',
-    height: 180,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-  },
-  headerCard: {
-    gap: spacing.sm,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  position: {
-    flex: 1,
-    color: colors.text,
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-  },
-  scheduleTag: {
-    backgroundColor: colors.accentSoft,
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-  },
-  scheduleText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-  salary: {
-    color: colors.success,
-    fontSize: fontSize.lg,
-    fontWeight: '700',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  rowText: {
-    flex: 1,
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  postedAt: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-  },
-  field: {
-    gap: spacing.sm,
-  },
-  label: {
-    color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  description: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-  },
-  footerActions: {
-    gap: spacing.sm,
-  },
-  warningBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: `${colors.warning}1F`,
-    borderWidth: 1,
-    borderColor: colors.warning,
-    borderRadius: radii.md,
-    padding: spacing.sm,
-  },
-  warningText: {
-    flex: 1,
-    color: colors.warning,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-    lineHeight: 16,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    photo: {
+      width: '100%',
+      height: 180,
+      borderRadius: radii.lg,
+      backgroundColor: colors.surface,
+    },
+    headerCard: {
+      gap: spacing.sm,
+    },
+    headerTop: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      gap: spacing.sm,
+    },
+    position: {
+      flex: 1,
+      color: colors.text,
+      fontSize: fontSize.xl,
+      fontWeight: '700',
+    },
+    scheduleTag: {
+      backgroundColor: colors.accentSoft,
+      borderRadius: radii.pill,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 4,
+    },
+    scheduleText: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+    },
+    salary: {
+      color: colors.success,
+      fontSize: fontSize.lg,
+      fontWeight: '700',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    rowText: {
+      flex: 1,
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    postedAt: {
+      color: colors.textMuted,
+      fontSize: fontSize.xs,
+    },
+    field: {
+      gap: spacing.sm,
+    },
+    label: {
+      color: colors.text,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    description: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      lineHeight: 20,
+    },
+    footerActions: {
+      gap: spacing.sm,
+    },
+    warningBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      gap: 4,
+      backgroundColor: `${colors.danger}14`,
+      borderRadius: radii.sm,
+      paddingVertical: 3,
+      paddingHorizontal: spacing.xs,
+    },
+    warningText: {
+      color: colors.danger,
+      fontSize: 10,
+      fontWeight: '500',
+    },
+  });

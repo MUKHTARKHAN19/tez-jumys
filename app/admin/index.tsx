@@ -1,13 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 
 import { Card } from '@/components/Card';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 
 type Stats = {
   vacanciesTotal: number;
@@ -19,6 +20,8 @@ type Stats = {
 
 export default function AdminDashboardScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [stats, setStats] = useState<Stats | null>(null);
 
   useFocusEffect(
@@ -96,10 +99,10 @@ export default function AdminDashboardScreen() {
   return (
     <ScreenContainer>
       <View style={styles.statsRow}>
-        <StatCard label={t('admin.statVacancies')} value={stats?.vacanciesTotal} />
-        <StatCard label={t('admin.statPending')} value={stats?.vacanciesPending} highlight />
-        <StatCard label={t('admin.statEmployers')} value={stats?.employersTotal} />
-        <StatCard label={t('admin.statSeekers')} value={stats?.seekersTotal} />
+        <StatCard label={t('admin.statVacancies')} value={stats?.vacanciesTotal} styles={styles} />
+        <StatCard label={t('admin.statPending')} value={stats?.vacanciesPending} highlight styles={styles} />
+        <StatCard label={t('admin.statEmployers')} value={stats?.employersTotal} styles={styles} />
+        <StatCard label={t('admin.statSeekers')} value={stats?.seekersTotal} styles={styles} />
       </View>
 
       <Card style={{ padding: 0, overflow: 'hidden' }}>
@@ -123,7 +126,17 @@ export default function AdminDashboardScreen() {
   );
 }
 
-function StatCard({ label, value, highlight }: { label: string; value?: number; highlight?: boolean }) {
+function StatCard({
+  label,
+  value,
+  highlight,
+  styles,
+}: {
+  label: string;
+  value?: number;
+  highlight?: boolean;
+  styles: ReturnType<typeof createStyles>;
+}) {
   return (
     <Card style={styles.statCard}>
       <Text style={[styles.statValue, highlight && styles.statValueHighlight]}>{value ?? '—'}</Text>
@@ -132,58 +145,59 @@ function StatCard({ label, value, highlight }: { label: string; value?: number; 
   );
 }
 
-const styles = StyleSheet.create({
-  statsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  statCard: {
-    flexBasis: '47%',
-    flexGrow: 1,
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.text,
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-  },
-  statValueHighlight: {
-    color: colors.warning,
-  },
-  statLabel: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  menuRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  menuRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  menuLabel: {
-    flex: 1,
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '500',
-  },
-  badge: {
-    backgroundColor: colors.warning,
-    borderRadius: radii.pill,
-    minWidth: 22,
-    height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-  },
-  badgeText: {
-    color: colors.background,
-    fontSize: fontSize.xs,
-    fontWeight: '700',
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    statsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    statCard: {
+      flexBasis: '47%',
+      flexGrow: 1,
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.text,
+      fontSize: fontSize.xl,
+      fontWeight: '700',
+    },
+    statValueHighlight: {
+      color: colors.warning,
+    },
+    statLabel: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    menuRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+    },
+    menuRowBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    menuLabel: {
+      flex: 1,
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '500',
+    },
+    badge: {
+      backgroundColor: colors.warning,
+      borderRadius: radii.pill,
+      minWidth: 22,
+      height: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 6,
+    },
+    badgeText: {
+      color: colors.background,
+      fontSize: fontSize.xs,
+      fontWeight: '700',
+    },
+  });

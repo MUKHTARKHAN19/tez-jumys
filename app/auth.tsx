@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { checkIsBlocked } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 
 type Mode = 'sign_in' | 'sign_up';
 
 export default function AuthScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [mode, setMode] = useState<Mode>('sign_in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -119,7 +122,8 @@ export default function AuthScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
   switcher: {
     flexDirection: 'row',
     backgroundColor: colors.surfaceAlt,

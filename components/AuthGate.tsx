@@ -4,9 +4,10 @@ import { router } from 'expo-router';
 
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
-import { colors, spacing } from '@/constants/theme';
+import { spacing } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 type AuthGateProps = PropsWithChildren<{
   message?: string;
@@ -15,6 +16,7 @@ type AuthGateProps = PropsWithChildren<{
 export function AuthGate({ children, message }: AuthGateProps) {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
 
   if (loading) {
     return (

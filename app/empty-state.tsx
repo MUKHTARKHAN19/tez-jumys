@@ -1,11 +1,12 @@
 import { View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
-import { colors } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 export default function EmptyStateScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'center' }}>

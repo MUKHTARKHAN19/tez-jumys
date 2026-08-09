@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
@@ -6,10 +6,11 @@ import { useFocusEffect } from 'expo-router';
 import { AuthGate } from '@/components/AuthGate';
 import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
-import { colors, fontSize, spacing } from '@/constants/theme';
+import { fontSize, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { SavedSearchWithRelations } from '@/types/database';
 
 export default function SavedSearchesScreen() {
@@ -24,6 +25,8 @@ export default function SavedSearchesScreen() {
 function SavedSearchesList() {
   const { user } = useAuth();
   const { t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<SavedSearchWithRelations[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -118,33 +121,34 @@ function SavedSearchesList() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  listContent: {
-    padding: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  title: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '700',
-  },
-  subtitle: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    listContent: {
+      padding: spacing.md,
+      paddingBottom: spacing.xl,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    title: {
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '700',
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+  });

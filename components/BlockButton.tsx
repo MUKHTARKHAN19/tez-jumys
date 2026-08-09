@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 
 type BlockButtonProps = {
   userId: string;
@@ -17,6 +18,8 @@ type BlockButtonProps = {
 export function BlockButton({ userId, displayName, onBlocked }: BlockButtonProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -68,39 +71,40 @@ export function BlockButton({ userId, displayName, onBlocked }: BlockButtonProps
   );
 }
 
-const styles = StyleSheet.create({
-  trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    alignSelf: 'flex-start',
-  },
-  triggerText: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-  },
-  confirmRow: {
-    gap: spacing.sm,
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: radii.md,
-    padding: spacing.sm,
-  },
-  confirmText: {
-    color: colors.text,
-    fontSize: fontSize.xs,
-  },
-  confirmActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  cancelText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-  confirmActionText: {
-    color: colors.danger,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    trigger: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      alignSelf: 'flex-start',
+    },
+    triggerText: {
+      color: colors.textMuted,
+      fontSize: fontSize.xs,
+    },
+    confirmRow: {
+      gap: spacing.sm,
+      backgroundColor: colors.surfaceAlt,
+      borderRadius: radii.md,
+      padding: spacing.sm,
+    },
+    confirmText: {
+      color: colors.text,
+      fontSize: fontSize.xs,
+    },
+    confirmActions: {
+      flexDirection: 'row',
+      gap: spacing.md,
+    },
+    cancelText: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+    },
+    confirmActionText: {
+      color: colors.danger,
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+    },
+  });

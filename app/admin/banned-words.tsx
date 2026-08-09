@@ -1,17 +1,20 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { BannedWord } from '@/types/database';
 
 export default function AdminBannedWordsScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(true);
   const [words, setWords] = useState<BannedWord[]>([]);
   const [newWord, setNewWord] = useState('');
@@ -102,48 +105,49 @@ export default function AdminBannedWordsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  addRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-  hint: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-  },
-  listContent: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xl,
-  },
-  wordRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-  },
-  wordText: {
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      padding: spacing.md,
+      gap: spacing.sm,
+    },
+    addRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    input: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      color: colors.text,
+      fontSize: fontSize.md,
+    },
+    hint: {
+      color: colors.textMuted,
+      fontSize: fontSize.xs,
+    },
+    listContent: {
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.xl,
+    },
+    wordRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm + 4,
+    },
+    wordText: {
+      color: colors.text,
+      fontSize: fontSize.md,
+    },
+  });

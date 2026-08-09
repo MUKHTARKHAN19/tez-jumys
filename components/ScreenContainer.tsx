@@ -1,7 +1,8 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useMemo } from 'react';
 import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { colors, spacing } from '@/constants/theme';
+import { spacing, type ColorTokens } from '@/constants/theme';
+import { useTheme } from '@/lib/theme';
 
 type ScreenContainerProps = PropsWithChildren<{
   scroll?: boolean;
@@ -9,6 +10,9 @@ type ScreenContainerProps = PropsWithChildren<{
 }>;
 
 export function ScreenContainer({ children, scroll = true, style }: ScreenContainerProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   if (!scroll) {
     return <View style={[styles.container, style]}>{children}</View>;
   }
@@ -23,14 +27,15 @@ export function ScreenContainer({ children, scroll = true, style }: ScreenContai
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: spacing.md,
-    paddingBottom: spacing.xl,
-    gap: spacing.md,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      padding: spacing.md,
+      paddingBottom: spacing.xl,
+      gap: spacing.md,
+    },
+  });

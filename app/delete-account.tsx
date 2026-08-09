@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -6,10 +6,11 @@ import { router } from 'expo-router';
 import { AuthGate } from '@/components/AuthGate';
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 
 export default function DeleteAccountScreen() {
   const { t } = useLanguage();
@@ -23,6 +24,8 @@ export default function DeleteAccountScreen() {
 function DeleteAccountContent() {
   const { t } = useLanguage();
   const { signOut } = useAuth();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,45 +82,46 @@ function DeleteAccountContent() {
   );
 }
 
-const styles = StyleSheet.create({
-  iconWrap: {
-    alignSelf: 'center',
-    width: 72,
-    height: 72,
-    borderRadius: radii.lg,
-    backgroundColor: `${colors.danger}1F`,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    color: colors.text,
-    fontSize: fontSize.lg,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  description: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  list: {
-    gap: spacing.xs,
-    alignSelf: 'stretch',
-  },
-  listItem: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  warning: {
-    color: colors.danger,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: fontSize.sm,
-    textAlign: 'center',
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    iconWrap: {
+      alignSelf: 'center',
+      width: 72,
+      height: 72,
+      borderRadius: radii.lg,
+      backgroundColor: `${colors.danger}1F`,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    title: {
+      color: colors.text,
+      fontSize: fontSize.lg,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    description: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+    list: {
+      gap: spacing.xs,
+      alignSelf: 'stretch',
+    },
+    listItem: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    warning: {
+      color: colors.danger,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: fontSize.sm,
+      textAlign: 'center',
+    },
+  });

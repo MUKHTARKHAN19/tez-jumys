@@ -1,19 +1,22 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 
 import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { Report } from '@/types/database';
 
 type EnrichedReport = Report & { targetLabel: string; targetMissing: boolean };
 
 export default function AdminReportsScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState<EnrichedReport[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -171,71 +174,72 @@ export default function AdminReportsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  listContent: {
-    padding: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  card: {
-    gap: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  targetType: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  targetLabel: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '600',
-  },
-  reason: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radii.pill,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  actionText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-  dangerButton: {
-    borderColor: colors.danger,
-    minWidth: 70,
-  },
-  dangerText: {
-    color: colors.danger,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    listContent: {
+      padding: spacing.md,
+      paddingBottom: spacing.xl,
+    },
+    card: {
+      gap: spacing.sm,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
+    targetType: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+    },
+    targetLabel: {
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '600',
+    },
+    reason: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    actionsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.md,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.sm,
+      borderRadius: radii.pill,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    actionText: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+    },
+    dangerButton: {
+      borderColor: colors.danger,
+      minWidth: 70,
+    },
+    dangerText: {
+      color: colors.danger,
+    },
+  });

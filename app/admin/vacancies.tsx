@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
@@ -6,15 +6,18 @@ import { router, useFocusEffect } from 'expo-router';
 import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { VacancyCard } from '@/components/VacancyCard';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { ModerationStatus, VacancyWithRelations } from '@/types/database';
 
 type FilterValue = 'all' | ModerationStatus;
 
 export default function AdminVacanciesScreen() {
   const { t } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [filter, setFilter] = useState<FilterValue>('pending');
   const [loading, setLoading] = useState(true);
   const [vacancies, setVacancies] = useState<VacancyWithRelations[]>([]);
@@ -123,7 +126,7 @@ export default function AdminVacanciesScreen() {
             />
 
             <View style={styles.metaRow}>
-              <StatusBadge status={item.moderation_status} />
+              <StatusBadge status={item.moderation_status} colors={colors} styles={styles} />
               {!item.is_active && (
                 <View style={[styles.badge, styles.hiddenBadge]}>
                   <Text style={styles.badgeText}>{t('admin.inactiveBadge')}</Text>
@@ -253,7 +256,15 @@ export default function AdminVacanciesScreen() {
   );
 }
 
-function StatusBadge({ status }: { status: ModerationStatus }) {
+function StatusBadge({
+  status,
+  colors,
+  styles,
+}: {
+  status: ModerationStatus;
+  colors: ColorTokens;
+  styles: ReturnType<typeof createStyles>;
+}) {
   const { t } = useLanguage();
   const map = {
     pending: { color: colors.warning, label: t('myAds.statusPending') },
@@ -268,88 +279,89 @@ function StatusBadge({ status }: { status: ModerationStatus }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  chipsRow: {
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  listContent: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  itemWrap: {
-    gap: spacing.sm,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  badge: {
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    alignSelf: 'flex-start',
-  },
-  hiddenBadge: {
-    backgroundColor: colors.surfaceAlt,
-    borderColor: colors.border,
-  },
-  badgeText: {
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radii.pill,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  actionText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-  deleteText: {
-    color: colors.danger,
-  },
-  confirmRow: {
-    gap: spacing.sm,
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: radii.md,
-    padding: spacing.sm,
-  },
-  confirmText: {
-    color: colors.text,
-    fontSize: fontSize.xs,
-  },
-  deleteConfirmButton: {
-    borderColor: colors.danger,
-    minWidth: 70,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    chipsRow: {
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+    },
+    listContent: {
+      flexGrow: 1,
+      paddingHorizontal: spacing.md,
+      paddingBottom: spacing.xl,
+    },
+    itemWrap: {
+      gap: spacing.sm,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    badge: {
+      borderRadius: radii.pill,
+      borderWidth: 1,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 4,
+      alignSelf: 'flex-start',
+    },
+    hiddenBadge: {
+      backgroundColor: colors.surfaceAlt,
+      borderColor: colors.border,
+    },
+    badgeText: {
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    actionsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.md,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.sm,
+      borderRadius: radii.pill,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    actionText: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '600',
+    },
+    deleteText: {
+      color: colors.danger,
+    },
+    confirmRow: {
+      gap: spacing.sm,
+      backgroundColor: colors.surfaceAlt,
+      borderRadius: radii.md,
+      padding: spacing.sm,
+    },
+    confirmText: {
+      color: colors.text,
+      fontSize: fontSize.xs,
+    },
+    deleteConfirmButton: {
+      borderColor: colors.danger,
+      minWidth: 70,
+    },
+  });

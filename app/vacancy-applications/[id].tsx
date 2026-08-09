@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Linking, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
@@ -6,15 +6,18 @@ import { useLocalSearchParams } from 'expo-router';
 import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
-import { colors, fontSize, spacing } from '@/constants/theme';
+import { fontSize, spacing, type ColorTokens } from '@/constants/theme';
 import { formatRelativeTime } from '@/lib/formatRelativeTime';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { ApplicationWithRelations } from '@/types/database';
 
 export default function VacancyApplicationsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { language, t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState<ApplicationWithRelations[]>([]);
 
@@ -122,67 +125,68 @@ export default function VacancyApplicationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  listContent: {
-    padding: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  card: {
-    gap: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  name: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '700',
-  },
-  position: {
-    color: colors.accent,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  newBadge: {
-    backgroundColor: colors.accentSoft,
-    borderRadius: 999,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-  },
-  newBadgeText: {
-    color: colors.accent,
-    fontSize: fontSize.xs,
-    fontWeight: '700',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  rowText: {
-    flex: 1,
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  appliedAt: {
-    color: colors.textMuted,
-    fontSize: fontSize.xs,
-  },
-  bio: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    listContent: {
+      padding: spacing.md,
+      paddingBottom: spacing.xl,
+    },
+    card: {
+      gap: spacing.sm,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    name: {
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '700',
+    },
+    position: {
+      color: colors.accent,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    newBadge: {
+      backgroundColor: colors.accentSoft,
+      borderRadius: 999,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 4,
+    },
+    newBadgeText: {
+      color: colors.accent,
+      fontSize: fontSize.xs,
+      fontWeight: '700',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
+    rowText: {
+      flex: 1,
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    appliedAt: {
+      color: colors.textMuted,
+      fontSize: fontSize.xs,
+    },
+    bio: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      lineHeight: 20,
+    },
+  });

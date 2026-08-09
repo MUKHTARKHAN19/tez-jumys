@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Linking, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
@@ -9,13 +9,16 @@ import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { PillButton } from '@/components/PillButton';
 import { ReportButton } from '@/components/ReportButton';
-import { colors, fontSize, spacing } from '@/constants/theme';
+import { fontSize, spacing, type ColorTokens } from '@/constants/theme';
 import { useLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type { Position, SeekerWithRelations } from '@/types/database';
 
 export default function CandidatesScreen() {
   const { t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
   const [seekers, setSeekers] = useState<SeekerWithRelations[]>([]);
@@ -137,59 +140,60 @@ export default function CandidatesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  chipsList: {
-    flexGrow: 0,
-  },
-  chipsRow: {
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  listContent: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  card: {
-    gap: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  name: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '700',
-  },
-  position: {
-    color: colors.accent,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  rowText: {
-    flex: 1,
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-  },
-  bio: {
-    color: colors.textSecondary,
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-  },
-  footerActions: {
-    gap: spacing.sm,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    chipsList: {
+      flexGrow: 0,
+    },
+    chipsRow: {
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+    },
+    listContent: {
+      flexGrow: 1,
+      paddingHorizontal: spacing.md,
+      paddingBottom: spacing.xl,
+    },
+    card: {
+      gap: spacing.sm,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    name: {
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '700',
+    },
+    position: {
+      color: colors.accent,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
+    rowText: {
+      flex: 1,
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+    },
+    bio: {
+      color: colors.textSecondary,
+      fontSize: fontSize.sm,
+      lineHeight: 20,
+    },
+    footerActions: {
+      gap: spacing.sm,
+    },
+  });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -10,11 +10,12 @@ import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { getSalaryPeriodOptions } from '@/constants/salaryPeriod';
 import { getScheduleOptions } from '@/constants/schedule';
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { acceptEula, hasAcceptedEula } from '@/lib/eula';
 import { useLanguage } from '@/lib/i18n';
 import { useLocationSelection, type LocationSelectionTarget } from '@/lib/locationSelection';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import type {
   Employer,
   Position,
@@ -33,6 +34,8 @@ type VacancyFormProps = {
 export function VacancyForm({ employer, initialVacancy, locationTarget, onSaved }: VacancyFormProps) {
   const isEdit = !!initialVacancy;
   const { language, t, localize } = useLanguage();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { getSelection, setSelection } = useLocationSelection();
   const locationSelection = getSelection(locationTarget);
 
@@ -307,62 +310,63 @@ export function VacancyForm({ employer, initialVacancy, locationTarget, onSaved 
   );
 }
 
-const styles = StyleSheet.create({
-  overlayBackdrop: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: spacing.lg,
-  },
-  overlayCard: {
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
-    minWidth: 220,
-  },
-  overlayText: {
-    color: colors.text,
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  field: {
-    gap: spacing.sm,
-  },
-  label: {
-    color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  chipsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  rowInput: {
-    flex: 1,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-  textArea: {
-    minHeight: 90,
-    textAlignVertical: 'top',
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    overlayBackdrop: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      padding: spacing.lg,
+    },
+    overlayCard: {
+      alignItems: 'center',
+      gap: spacing.sm,
+      backgroundColor: colors.surface,
+      borderRadius: radii.lg,
+      paddingVertical: spacing.xl,
+      paddingHorizontal: spacing.lg,
+      minWidth: 220,
+    },
+    overlayText: {
+      color: colors.text,
+      fontSize: fontSize.md,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    field: {
+      gap: spacing.sm,
+    },
+    label: {
+      color: colors.text,
+      fontSize: fontSize.sm,
+      fontWeight: '600',
+    },
+    chipsWrap: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    rowInput: {
+      flex: 1,
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm + 4,
+      color: colors.text,
+      fontSize: fontSize.md,
+    },
+    textArea: {
+      minHeight: 90,
+      textAlignVertical: 'top',
+    },
+  });

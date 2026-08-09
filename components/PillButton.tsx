@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { colors, fontSize, radii, spacing } from '@/constants/theme';
+import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
+import { useTheme } from '@/lib/theme';
 
 type PillButtonProps = {
   label: string;
@@ -18,6 +20,8 @@ export function PillButton({
   icon,
   disabled = false,
 }: PillButtonProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isOutline = variant === 'outline';
 
   return (
@@ -45,40 +49,41 @@ export function PillButton({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radii.pill,
-  },
-  primary: {
-    backgroundColor: colors.accent,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.accent,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  icon: {
-    marginRight: spacing.sm,
-  },
-  label: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-  },
-  labelPrimary: {
-    color: colors.white,
-  },
-  labelOutline: {
-    color: colors.accent,
-  },
-});
+const createStyles = (colors: ColorTokens) =>
+  StyleSheet.create({
+    base: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
+      borderRadius: radii.pill,
+    },
+    primary: {
+      backgroundColor: colors.accent,
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderColor: colors.accent,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    icon: {
+      marginRight: spacing.sm,
+    },
+    label: {
+      fontSize: fontSize.md,
+      fontWeight: '600',
+    },
+    labelPrimary: {
+      color: colors.white,
+    },
+    labelOutline: {
+      color: colors.accent,
+    },
+  });
