@@ -86,6 +86,13 @@ function SeekerProfileForm() {
                 ? localize(data.region)
                 : null
         );
+      } else {
+        // Жаңа профиль — Apple/Google арқылы кірген кезде сақталған атау/телефонды
+        // алдын ала толтырамыз (user_metadata: lib/socialAuth.ts, PhonePromptModal).
+        const metaFullName = user.user_metadata?.full_name;
+        const metaPhone = user.user_metadata?.phone;
+        if (typeof metaFullName === 'string') setFullName(metaFullName);
+        if (typeof metaPhone === 'string') setContactPhone(metaPhone);
       }
       setLoading(false);
     });

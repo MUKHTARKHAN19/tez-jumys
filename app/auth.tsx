@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 
 import { PillButton } from '@/components/PillButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SocialAuthButtons } from '@/components/SocialAuthButtons';
 import { fontSize, radii, spacing, type ColorTokens } from '@/constants/theme';
 import { checkIsBlocked } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
@@ -48,6 +49,21 @@ export default function AuthScreen() {
       setInfo(t('auth.signUpSuccess'));
       return;
     }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData.session?.user.id;
+    if (userId && (await checkIsBlocked(userId))) {
+      await supabase.auth.signOut();
+      setError(t('auth.blockedMessage'));
+      return;
+    }
+
+    router.back();
+  };
+
+  const handleSocialSuccess = async () => {
+    setError(null);
+    setInfo(null);
 
     const { data: sessionData } = await supabase.auth.getSession();
     const userId = sessionData.session?.user.id;
@@ -118,6 +134,8 @@ export default function AuthScreen() {
         onPress={handleSubmit}
         disabled={loading}
       />
+
+      <SocialAuthButtons onSuccess={handleSocialSuccess} onError={setError} />
     </ScreenContainer>
   );
 }

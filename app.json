@@ -8,9 +8,15 @@
     "scheme": "tezjumys",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "kz.tezjumys.app",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "kz.tezjumys.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#101018",
@@ -45,7 +51,14 @@
           "color": "#7C6FE8"
         }
       ],
-      "@sentry/react-native"
+      "@sentry/react-native",
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.893899262275-5j7o0fpjd3kggot2hb2ubao07htnth26"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

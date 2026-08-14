@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type PropsWithChildren 
 import type { Session, User } from '@supabase/supabase-js';
 
 import { supabase } from '@/lib/supabase';
+import { signOutSocial } from '@/lib/socialAuth';
 
 type AuthContextValue = {
   session: Session | null;
@@ -73,6 +74,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    await signOutSocial();
   };
 
   return (

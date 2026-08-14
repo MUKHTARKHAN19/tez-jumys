@@ -157,6 +157,17 @@ const kk = {
   'auth.signUpSuccess':
     'Тіркелу сәтті өтті. Email-ге келген растау хатындағы сілтемені басып, содан кейін кіріңіз.',
   'auth.forgotPassword': 'Парольді ұмыттыңыз ба?',
+  'auth.orDivider': 'немесе',
+  'auth.googleSignIn': 'Google арқылы кіру',
+  'auth.socialError': 'Кіру кезінде қате шықты. Қайталап көріңіз.',
+
+  'phonePrompt.title': 'Телефон нөміріңізді қалдырыңыз',
+  'phonePrompt.description':
+    'Apple email-іңізді жасырды. Жұмыс берушілер мен жұмыс іздеушілер сізбен байланысу үшін телефон нөміріңіз қажет.',
+  'phonePrompt.placeholder': '+7 (___) ___ __ __',
+  'phonePrompt.saveButton': 'Сақтау',
+  'phonePrompt.skipButton': 'Кейінірек',
+  'phonePrompt.errorRequired': 'Телефон нөмірін енгізіңіз.',
 
   'emptyStateDemo.title': 'Нәтиже табылмады',
   'emptyStateDemo.description': 'Сүзгі параметрлерін өзгертіп көріңіз немесе іздеу аймағын кеңейтіңіз.',
@@ -479,6 +490,17 @@ const ru: Record<keyof typeof kk, string> = {
   'auth.signUpSuccess':
     'Регистрация прошла успешно. Перейдите по ссылке в письме на вашу почту, затем войдите.',
   'auth.forgotPassword': 'Забыли пароль?',
+  'auth.orDivider': 'или',
+  'auth.googleSignIn': 'Войти через Google',
+  'auth.socialError': 'Ошибка при входе. Попробуйте ещё раз.',
+
+  'phonePrompt.title': 'Оставьте номер телефона',
+  'phonePrompt.description':
+    'Apple скрыл ваш email. Работодателям и соискателям нужен номер телефона, чтобы связаться с вами.',
+  'phonePrompt.placeholder': '+7 (___) ___ __ __',
+  'phonePrompt.saveButton': 'Сохранить',
+  'phonePrompt.skipButton': 'Позже',
+  'phonePrompt.errorRequired': 'Введите номер телефона.',
 
   'emptyStateDemo.title': 'Результат не найден',
   'emptyStateDemo.description': 'Попробуйте изменить параметры фильтра или расширить область поиска.',

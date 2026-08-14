@@ -76,6 +76,11 @@ function BusinessProfileForm() {
                     : null
             );
             setLogoUrl(data.logo_url);
+          } else {
+            // Жаңа профиль — Apple/Google арқылы кірген кезде сақталған телефонды
+            // алдын ала толтырамыз (user_metadata: lib/socialAuth.ts, PhonePromptModal).
+            const metaPhone = user.user_metadata?.phone;
+            if (typeof metaPhone === 'string') setContactPhone(metaPhone);
           }
           setLoading(false);
         }
